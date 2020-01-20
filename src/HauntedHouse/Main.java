@@ -5,17 +5,45 @@
  */
 package HauntedHouse;
 
+import java.util.Scanner;
+
 /**
  *
  * @author Utilizador
  */
 public class Main {
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
-        // TODO code application logic here
+
+        MenuImages outputImages = new MenuImages();
+        Scanner sc = new Scanner(System.in);
+        int o;
+        // Ecrã de escolha da dificuldade
+        //outputImages.Screen_DifficultyChoice();
+
+        do {
+            do {
+                outputImages.Screen_MainMenu();
+                System.out.println("Introduza opção: ");
+                while (!sc.hasNextInt()) {
+                    System.out.println("Opção com formato inválido!");
+                    sc.next(); // this is important!
+                }
+                o = sc.nextInt();
+            } while (o < 0 || o > 3);
+            switch (o) {
+                case 1:
+                    outputImages.Screen_NormalGameMode();
+                    break;
+                case 2:
+                    outputImages.Screen_SimulationGameMode();
+                    break;
+                case 3:
+                    outputImages.Screen_MapRanking();
+                    break;
+                default:
+                    System.out.println("Escolheu sair do programa");
+            }
+        } while (o != 0);
     }
-    
 }
