@@ -14,54 +14,22 @@ import java.util.Scanner;
  */
 public class MenuImages {
 
-    public MenuImages() {
-    }
-
-    public int validateInput(Scanner sc) {
-        int number;
-        boolean flag = false;
-        do {
-            System.out.println("Introduza opção: ");
-            number = sc.nextInt();
-            while (!sc.hasNextInt()) {
-                System.out.println("Opção com formato inválido!");
-                sc.next(); // this is important!
-                flag = false;
-            }
-            if (sc.hasNextInt()) {
-                flag = true;
-            }
-        } while (!flag);
-        return number;
-    }
-
-    protected void clrscr() {
-        //Clears Screen in java
-        try {
-            if (System.getProperty("os.name").contains("Windows")) {
-                new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-            } else {
-                Runtime.getRuntime().exec("clear");
-            }
-        } catch (IOException | InterruptedException ex) {
-        }
-    }
-
     protected void Screen_MainMenu() {
-        System.out.println(" _________________________________________________________________");
+        System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                     Casa Assombrada                              |");
         System.out.println("|                                                                  |");
         System.out.println("|     1 -> Modo Normal                                             |");
         System.out.println("|     2 -> Modo Simulação                                          |");
         System.out.println("|     3 -> Classificação por pontos de vida restantes              |");
+        System.out.println("|     4 -> Alterar a dificuldade do jogo                           |");
         System.out.println("|                                                                  |");
         System.out.println("|     0 -> Sair                                                    |");
         System.out.println("|__________________________________________________________________|");
     }
 
     protected void Screen_DifficultyChoice() {
-        System.out.println(" _________________________________________________________________");
+        System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                  Dificuldade do jogo                             |");
         System.out.println("|                                                                  |");
@@ -71,6 +39,43 @@ public class MenuImages {
         System.out.println("|                                                                  |");
         System.out.println("|     0 -> Sair                                                    |");
         System.out.println("|__________________________________________________________________|");
+    }
+
+    /**
+     * Ver onde colocar este método (obter a dificuldade pedida pelo utilizador)
+     *
+     * @return o valor da dificuldade (1 - Básico , 2 - Normal , 3 - Díficil)
+     */
+    public int getDifficultyChoice(int currentDifficulty) {
+        Scanner sc = new Scanner(System.in);
+        int opt;
+        int choice = currentDifficulty;
+        do {
+            do {
+                Screen_DifficultyChoice();
+                System.out.println("Introduza opção: ");
+                while (!sc.hasNextInt()) {
+                    System.out.println("Opção com formato inválido!");
+                    sc.next();
+                }
+                opt = sc.nextInt();
+            } while (opt < 0 || opt > 3);
+            switch (opt) {
+                case 1:
+                    choice = 1;
+                    break;
+                case 2:
+                    choice = 2;
+                    break;
+                case 3:
+                    choice = 3;
+                    break;
+                default:
+                    System.out.println("Escolheu voltar ao menu principal "
+                            + "(Dificuldade atual mantida)");
+            }
+            return choice;
+        } while (opt != 0);
     }
 
     protected void Screen_LoadMap() {

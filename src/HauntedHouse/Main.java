@@ -18,8 +18,7 @@ public class Main {
         MenuImages outputImages = new MenuImages();
         Scanner sc = new Scanner(System.in);
         int o;
-        // Ecrã de escolha da dificuldade
-        //outputImages.Screen_DifficultyChoice();
+        int dc = 1;//a dificuldade mantém se no 1 como defeito(ver como fazer com isto)
 
         do {
             do {
@@ -27,10 +26,10 @@ public class Main {
                 System.out.println("Introduza opção: ");
                 while (!sc.hasNextInt()) {
                     System.out.println("Opção com formato inválido!");
-                    sc.next(); // this is important!
+                    sc.next();
                 }
                 o = sc.nextInt();
-            } while (o < 0 || o > 3);
+            } while (o < 0 || o > 4);
             switch (o) {
                 case 1:
                     outputImages.Screen_NormalGameMode();
@@ -40,6 +39,10 @@ public class Main {
                     break;
                 case 3:
                     outputImages.Screen_MapRanking();
+                    break;
+                case 4:
+                    //outputImages.Screen_DifficultyChoice(); Ver como é que vou fazer para guardar a variável da dificuldade retirada através do menu
+                    dc = outputImages.getDifficultyChoice(dc);// Menu responsável por alterar a dificuldade returnando 
                     break;
                 default:
                     System.out.println("Escolheu sair do programa");
