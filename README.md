@@ -40,7 +40,7 @@ O que fazer para o próximo commit:
 
 --------------------------------------------------------------------------------------------------------
 
-21/01/2020 19:00 Autor: João Pereira Mensagem do Commit:"Modificacoes na classe TUI "
+21/01/2020 19:00 Autor: João Pereira Mensagem do Commit:"Modificacoes na classe TUI"
 
 O que foi feito neste commit:
 

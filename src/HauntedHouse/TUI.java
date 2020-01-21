@@ -13,13 +13,11 @@ public class TUI {
         Scanner sc = new Scanner(System.in);
         int o;
         int dc = getInitialDifficultyChoice();
-        if (dc == 0) {
-            System.exit(0);
-        }
+
         String playerName = getPlayerName();
         do {
             do {
-                this.Screen_MainMenu(playerName,getDifficulty(dc));
+                this.Screen_MainMenu(playerName, getDifficulty(dc));
                 System.out.println("Introduza opção: ");
                 while (!sc.hasNextInt()) {
                     System.out.println("Opção com formato inválido!");
@@ -51,7 +49,7 @@ public class TUI {
         System.out.println("|                                                                  |");
         System.out.println("|                     Casa Assombrada                              |");
         System.out.println("|                                                                  |");
-        System.out.println("|                  Bem vindo "+ name +" !                         |");
+        System.out.println("|                  Bem vindo " + name + " !                         |");
         System.out.println("|                                                                  |");
         System.out.println("|            Dificuldade de jogo atual: " + difficulty + "                     |");
         System.out.println("|                                                                  |");
@@ -113,6 +111,7 @@ public class TUI {
                 default:
                     choice = 0;
                     System.out.println("Escolheu sair do programa!");
+                    System.exit(0);
             }
             return choice;
         } while (opt != 0);
