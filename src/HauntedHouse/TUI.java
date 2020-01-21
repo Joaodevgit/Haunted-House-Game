@@ -1,20 +1,49 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package HauntedHouse;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
  *
- * @author Utilizador
+ * @author Francisco Spínola
+ * @author João Tiago Pereira
  */
-public class MenuImages {
+public class TUI {
+    
+    public TUI() {
+        Scanner sc = new Scanner(System.in);
+        int o;
+        int dc = 1;//a dificuldade mantém-se no 1 como defeito(ver como fazer com isto)
 
-    protected void Screen_MainMenu() {
+        do {
+            do {
+                this.Screen_MainMenu();
+                System.out.println("Introduza opção: ");
+                while (!sc.hasNextInt()) {
+                    System.out.println("Opção com formato inválido!");
+                    sc.next();
+                }
+                o = sc.nextInt();
+            } while (o < 0 || o > 4);
+            switch (o) {
+                case 1:
+                    this.Screen_NormalGameMode();
+                    break;
+                case 2:
+                    this.Screen_SimulationGameMode();
+                    break;
+                case 3:
+                    this.Screen_MapRanking();
+                    break;
+                case 4:
+                    //this.Screen_DifficultyChoice(); Ver como é que vou fazer para guardar a variável da dificuldade retirada através do menu
+                    dc = this.getDifficultyChoice(dc);// Menu responsável por alterar a dificuldade returnando 
+                    break;
+                default: break;
+            }
+        } while (o != 0);
+    }
+
+    private void Screen_MainMenu() {
         System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                     Casa Assombrada                              |");
@@ -28,7 +57,7 @@ public class MenuImages {
         System.out.println("|__________________________________________________________________|");
     }
 
-    protected void Screen_DifficultyChoice() {
+    private void Screen_DifficultyChoice() {
         System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                  Dificuldade do jogo                             |");
@@ -46,7 +75,7 @@ public class MenuImages {
      *
      * @return o valor da dificuldade (1 - Básico , 2 - Normal , 3 - Díficil)
      */
-    public int getDifficultyChoice(int currentDifficulty) {
+    private int getDifficultyChoice(int currentDifficulty) {
         Scanner sc = new Scanner(System.in);
         int opt;
         int choice = currentDifficulty;
@@ -78,49 +107,49 @@ public class MenuImages {
         } while (opt != 0);
     }
 
-    protected void Screen_LoadMap() {
+    private void Screen_LoadMap() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
         System.out.println("|                 Mapa carregado com sucesso!                     |");
         System.out.println("|_________________________________________________________________|");
     }
 
-    protected void Screen_SimulationGameMode() {
+    private void Screen_SimulationGameMode() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
         System.out.println("|                       Modo Simulação                            |");
         System.out.println("|_________________________________________________________________|");
     }
 
-    protected void Screen_NormalGameMode() {
+    private void Screen_NormalGameMode() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
         System.out.println("|                         Modo Normal                             |");
         System.out.println("|_________________________________________________________________|");
     }
 
-    protected void Screen_MapRanking() {
+    private void Screen_MapRanking() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|       Classficação do mapa (Por pontos de vida restantes)        | ");
         System.out.println("|__________________________________________________________________|");
     }
 
-    protected void Screen_PlayerInfo() {
+    private void Screen_PlayerInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
         System.out.println("|                   Informação do jogador                         |");
         System.out.println("|_________________________________________________________________|");
     }
 
-    protected void Screen_DeadInfo() {
+    private void Screen_DeadInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|            Perdeu as vidas todas ! Game Over                     | ");
         System.out.println("|__________________________________________________________________|");
     }
 
-    protected void Screen_VictoryInfo() {
+    private void Screen_VictoryInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                  Parabéns chegou à saída!                        | ");

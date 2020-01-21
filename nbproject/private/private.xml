@@ -3,8 +3,15 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+<<<<<<< HEAD
             <file>file:/C:/Users/Utilizador/Desktop/LEI19-20/ED/Trabalho%20Prático/ED_TP_Projeto/src/HauntedHouse/Main.java</file>
             <file>file:/C:/Users/Utilizador/Desktop/LEI19-20/ED/Trabalho%20Prático/ED_TP_Projeto/src/HauntedHouse/MenuImages.java</file>
+=======
+            <file>file:/C:/Projetos/Java/TP-ED/Haunted-House-TP-ED/src/HauntedHouse/TUI.java</file>
+            <file>file:/C:/Projetos/Java/TP-ED/Haunted-House-TP-ED/src/HauntedHouse/Room.java</file>
+            <file>file:/C:/Projetos/Java/TP-ED/Haunted-House-TP-ED/src/HauntedHouse/Map.java</file>
+            <file>file:/C:/Projetos/Java/TP-ED/Haunted-House-TP-ED/src/HauntedHouse/Main.java</file>
+>>>>>>> 087ce819364193bbb33248519d34629186b87992
         </group>
     </open-files>
 </project-private>
