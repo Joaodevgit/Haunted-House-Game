@@ -13,20 +13,18 @@ import java.util.logging.Logger;
  */
 public class Main {
     public static void main(String[] args) {
-        /*
         try {
             Map map = new Map();
             Room room = new Room("hall", 0);
-            Iterator iter = map.iteratorBFS(room);
+            Iterator<Room> iter = map.iteratorBFS(room);
             while (iter.hasNext()) {
-                System.out.println(iter.next());
+                System.out.println(iter.next().toString());
             }
         } catch (EmptyCollectionException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ElementNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
-        */
         new TUI();
     }
 }
