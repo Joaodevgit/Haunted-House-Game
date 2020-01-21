@@ -4,10 +4,10 @@ O que foi feito neste commit:
 
 - Criação do menu principal na classe Main
 - Criação da classe MenuImages ( que irá ser responsável pela TUI (Text-base user interface)
-- Criação de um menu dentro do menu principal que irá ser responsável pela alteração a dificuldade do 
-  jogo e que consequentemente irá retornar uma vguardar a variável (responsável por definir ,através da 
+- Criação de um menu dentro do menu principal que irá ser responsável pela alteração a dificuldade do
+  jogo e que consequentemente irá retornar uma vguardar a variável (responsável por definir ,através da
   multiplicação o nº de pontos que um fantasma pode retirar ao jogador)
-  
+
 O que fazer para o próximo commit:
 
 - Perceber que estruturas de dados aplicar em cada situação mencionada no enunciado
@@ -35,5 +35,30 @@ O que foi feito neste commit:
 
 O que fazer para o próximo commit:
 
-- 
+-
 
+
+--------------------------------------------------------------------------------------------------------
+
+21/01/2020 19:00 Autor: João Pereira Mensagem do Commit:"Modificacoes na classe TUI "
+
+O que foi feito neste commit:
+
+Classe TUI:
+- A dificuldade irá ser escolhida de inicio e futuramente poderá ser alterada na opção "4" do menu
+principal (Adição do ecrã responsável por mostrar ao utilizador qual a dificuldade que deseja escolher)
+- Adição do método getPlayerName() que irá ser responsável por retornar o nome do jogador
+- Adição no ecrã menu principal o nome do jogador e a dificuldade atual escolhida
+- Criação dos métodos getDifficulty(int difficultyNumber), mudança do nome do método getDifficultyChoice()
+para getInitialDifficultyChoice()
+
+O que fazer para o próximo commit:
+
+- Perceber que estruturas de dados aplicar em cada situação mencionada no enunciado
+- Resolver o método do caminho mais curto através do peso
+- Ver como vamos guardar a variável responsável por alterar a dificuldade do jogo
+
+Decisões da implementação/projeto a serem tomadas:
+- Nada a assinalar
+
+--------------------------------------------------------------------------------------------------------

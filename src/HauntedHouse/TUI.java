@@ -8,15 +8,18 @@ import java.util.Scanner;
  * @author João Tiago Pereira
  */
 public class TUI {
-    
+
     public TUI() {
         Scanner sc = new Scanner(System.in);
         int o;
-        int dc = 1;//a dificuldade mantém-se no 1 como defeito(ver como fazer com isto)
-
+        int dc = getInitialDifficultyChoice();
+        if (dc == 0) {
+            System.exit(0);
+        }
+        String playerName = getPlayerName();
         do {
             do {
-                this.Screen_MainMenu();
+                this.Screen_MainMenu(playerName,getDifficulty(dc));
                 System.out.println("Introduza opção: ");
                 while (!sc.hasNextInt()) {
                     System.out.println("Opção com formato inválido!");
@@ -35,18 +38,22 @@ public class TUI {
                     this.Screen_MapRanking();
                     break;
                 case 4:
-                    //this.Screen_DifficultyChoice(); Ver como é que vou fazer para guardar a variável da dificuldade retirada através do menu
-                    dc = this.getDifficultyChoice(dc);// Menu responsável por alterar a dificuldade returnando 
+                    dc = this.changeDifficultyChoice(dc);// Menu responsável por alterar a dificuldade returnando 
                     break;
-                default: break;
+                default:
+                    break;
             }
         } while (o != 0);
     }
 
-    private void Screen_MainMenu() {
+    private void Screen_MainMenu(String name, String difficulty) {
         System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                     Casa Assombrada                              |");
+        System.out.println("|                                                                  |");
+        System.out.println("|                  Bem vindo "+ name +" !                         |");
+        System.out.println("|                                                                  |");
+        System.out.println("|            Dificuldade de jogo atual: " + difficulty + "                     |");
         System.out.println("|                                                                  |");
         System.out.println("|     1 -> Modo Normal                                             |");
         System.out.println("|     2 -> Modo Simulação                                          |");
@@ -60,31 +67,32 @@ public class TUI {
     private void Screen_DifficultyChoice() {
         System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
-        System.out.println("|                  Dificuldade do jogo                             |");
+        System.out.println("|                       Dificuldade do jogo                        |");
         System.out.println("|                                                                  |");
-        System.out.println("|     1 -> Básico                                                  |");
-        System.out.println("|     2 -> Normal                                                  |");
-        System.out.println("|     3 -> Díficil                                                 |");
+        System.out.println("|         1 -> Básico                                              |");
+        System.out.println("|         2 -> Normal                                              |");
+        System.out.println("|         3 -> Díficil                                             |");
         System.out.println("|                                                                  |");
-        System.out.println("|     0 -> Sair                                                    |");
+        System.out.println("|         0 -> Sair                                                |");
         System.out.println("|__________________________________________________________________|");
     }
 
     /**
-     * Ver onde colocar este método (obter a dificuldade pedida pelo utilizador)
+     * Método responsável por definir a dificuldade inicial
      *
-     * @return o valor da dificuldade (1 - Básico , 2 - Normal , 3 - Díficil)
+     * @return o valor da dificuldade (1 - Básico , 2 - Normal , 3 - Díficil,0 -
+     * Termina o programa)
      */
-    private int getDifficultyChoice(int currentDifficulty) {
+    private int getInitialDifficultyChoice() {
         Scanner sc = new Scanner(System.in);
         int opt;
-        int choice = currentDifficulty;
+        int choice;
         do {
             do {
                 Screen_DifficultyChoice();
-                System.out.println("Introduza opção: ");
+                System.out.println("Escolha a dificuldade: ");
                 while (!sc.hasNextInt()) {
-                    System.out.println("Opção com formato inválido!");
+                    System.out.println("Opção de escolha com formato inválido!");
                     sc.next();
                 }
                 opt = sc.nextInt();
@@ -92,19 +100,97 @@ public class TUI {
             switch (opt) {
                 case 1:
                     choice = 1;
+                    System.out.println("Escolheu a dificuldade Básico!");
                     break;
                 case 2:
                     choice = 2;
+                    System.out.println("Escolheu a dificuldade Normal!");
                     break;
                 case 3:
                     choice = 3;
+                    System.out.println("Escolheu a dificuldade Difícil!");
                     break;
                 default:
-                    System.out.println("Escolheu voltar ao menu principal "
-                            + "(Dificuldade atual mantida)");
+                    choice = 0;
+                    System.out.println("Escolheu sair do programa!");
             }
             return choice;
         } while (opt != 0);
+    }
+
+    /**
+     * Método responsável por alterar (ou não) a dificuldade inicial
+     *
+     * @return o valor da dificuldade (1 - Básico , 2 - Normal , 3 - Díficil, 0
+     * - Mantém a dificuldade que estava)
+     */
+    private int changeDifficultyChoice(int currentDifficulty) {
+        Scanner sc = new Scanner(System.in);
+        int opt;
+        int choice = currentDifficulty;
+        do {
+            do {
+                Screen_DifficultyChoice();
+                System.out.println("Escolha a dificuldade: ");
+                while (!sc.hasNextInt()) {
+                    System.out.println("Opção de escolha com formato inválido!");
+                    sc.next();
+                }
+                opt = sc.nextInt();
+            } while (opt < 0 || opt > 3);
+            switch (opt) {
+                case 1:
+                    choice = 1;
+                    System.out.println("Escolheu a dificuldade Básico!");
+                    break;
+                case 2:
+                    choice = 2;
+                    System.out.println("Escolheu a dificuldade Normal!");
+                    break;
+                case 3:
+                    choice = 3;
+                    System.out.println("Escolheu a dificuldade Difícil!");
+                    break;
+                default:
+                    choice = currentDifficulty;
+                    System.out.println("Escolheu voltar ao menu principal! (Dificuldade mantida)");
+            }
+            return choice;
+        } while (opt != 0);
+    }
+
+    private String getDifficulty(int difficultyNumber) {
+        String difficulty;
+        switch (difficultyNumber) {
+            case 1:
+                difficulty = "Básico";
+                break;
+            case 2:
+                difficulty = "Normal";
+                break;
+            case 3:
+                difficulty = "Difícil";
+                break;
+            default:
+                difficulty = "erro";
+                System.out.println("Erro!");
+        }
+        return difficulty;
+    }
+
+    private void Screen_PlayerName() {
+        System.out.println(" _________________________________________________________________");
+        System.out.println("|                                                                 |");
+        System.out.println("|                       Nome do jogador                           |");
+        System.out.println("|_________________________________________________________________|");
+        System.out.println("Nome do jogador: ");
+    }
+
+    private String getPlayerName() {
+        Scanner sc = new Scanner(System.in);
+        Screen_PlayerName();
+        String name = sc.nextLine();
+        return name;
     }
 
     private void Screen_LoadMap() {
