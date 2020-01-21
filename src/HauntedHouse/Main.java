@@ -1,10 +1,10 @@
 package HauntedHouse;
 
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import org.json.simple.JSONObject; 
-import org.json.simple.parser.*; 
+import ed.exceptions.ElementNotFoundException;
+import ed.exceptions.EmptyCollectionException;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -13,10 +13,20 @@ import org.json.simple.parser.*;
  */
 public class Main {
     public static void main(String[] args) {
+        /*
         try {
-            Object obj = new JSONParser().parse(new FileReader("Mapa.json"));
-            JSONObject jo = (JSONObject) obj;
-            new TUI();
-        } catch (FileNotFoundException ex) {} catch (IOException ex) {} catch (ParseException ex) {}
+            Map map = new Map();
+            Room room = new Room("hall", 0);
+            Iterator iter = map.iteratorBFS(room);
+            while (iter.hasNext()) {
+                System.out.println(iter.next());
+            }
+        } catch (EmptyCollectionException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ElementNotFoundException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        */
+        new TUI();
     }
 }

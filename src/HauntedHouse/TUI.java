@@ -38,8 +38,7 @@ public class TUI {
                     //this.Screen_DifficultyChoice(); Ver como é que vou fazer para guardar a variável da dificuldade retirada através do menu
                     dc = this.getDifficultyChoice(dc);// Menu responsável por alterar a dificuldade returnando 
                     break;
-                default:
-                    System.out.println("Escolheu sair do programa");
+                default: break;
             }
         } while (o != 0);
     }

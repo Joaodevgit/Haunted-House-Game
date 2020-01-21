@@ -21,3 +21,19 @@ Decisões da implementação/projeto a serem tomadas:
   aquando da iniciação do programa e depois pode ser alterada (Eu escolho a 1º opção)
 
 --------------------------------------------------------------------------------------------------------
+
+21/01/2020 13:36 Autor: Francisco Spínola Mensagem do Commit: "JSON Parser"
+
+O que foi feito neste commit:
+
+- Alteração da classe Main
+- Alteração da estrutura do TUI
+- Alteração de MenuImagens para TUI
+- Criação do parser de JSON
+- Criação da classe Map que extende UndirectedGraph e não tem funcionalidades implementadas ainda
+- Criação da classe Room para implementar como aposento com as variáveis nome e ghost
+
+O que fazer para o próximo commit:
+
+- 
+

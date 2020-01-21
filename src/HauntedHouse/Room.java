@@ -7,11 +7,16 @@ package HauntedHouse;
  */
 public class Room {
     private String name;
-    private int ghost;
+    private long ghost;
 
-    public Room(String name, int ghost) {
+    public Room(String name, long ghost) {
         this.name = name;
         this.ghost = ghost;
+    }
+    
+    public Room() {
+        this.name = "";
+        this.ghost = 0;
     }
 
     public String getName() {
@@ -22,11 +27,11 @@ public class Room {
         this.name = name;
     }
 
-    public int getGhost() {
+    public long getGhost() {
         return ghost;
     }
 
-    public void setGhost(int ghost) {
+    public void setGhost(long ghost) {
         this.ghost = ghost;
     }
 }
