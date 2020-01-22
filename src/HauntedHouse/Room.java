@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  *
  * @author Francisco Spínola
- * @author João Tiago Pereira
+ * @author João Pereira
  */
 public class Room {
     private String name;
