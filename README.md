@@ -62,3 +62,16 @@ Decisões da implementação/projeto a serem tomadas:
 - Nada a assinalar
 
 --------------------------------------------------------------------------------------------------------
+
+22/01/2020 12:22 Francisco Spínola, Commit: "JSONParser completo"
+
+O que foi feito neste commit:
+
+- Parser de json para java já funciona
+- Mudança de implementação de Grafo não direcionado para Rede direcionada
+- Rede implementada com sucesso
+
+O que fazer para o próximo commit:
+
+- Modificar a classe Graph (quando fazem a verificaçao if (vertices[i] == 1) tem que ser if (vertices[i] != Double.POSITIVE_INFINITY)). Esta é a razao dos iteradores não funcionarem...
+- Acabar classe Network

@@ -9,7 +9,7 @@ import java.util.Objects;
  */
 public class Room {
     private String name;
-    private long ghost;
+    
     /**
      * How variable <i>type</i> works:
      * 
@@ -19,15 +19,13 @@ public class Room {
      */
     private short type;
 
-    public Room(String name, long ghost) {
+    public Room(String name) {
         this.name = name;
-        this.ghost = ghost;
         this.type = 0;
     }
     
-    public Room(String name, long ghost, short type) throws Exception {
+    public Room(String name, short type) throws Exception {
         this.name = name;
-        this.ghost = ghost;
         if (type > 1 || type < -1)
             throw new Exception("invalid type for the room");
         this.type = type;
@@ -35,7 +33,6 @@ public class Room {
     
     public Room() {
         this.name = "";
-        this.ghost = 0;
         this.type = 0;
     }
 
@@ -45,14 +42,6 @@ public class Room {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public long getGhost() {
-        return ghost;
-    }
-
-    public void setGhost(long ghost) {
-        this.ghost = ghost;
     }
 
     public short getType() {
@@ -75,9 +64,6 @@ public class Room {
             return false;
         }
         final Room other = (Room) obj;
-        if (this.ghost != other.ghost) {
-            return false;
-        }
         if (this.type != other.type) {
             return false;
         }
@@ -93,13 +79,13 @@ public class Room {
         switch (this.type) {
             case 1: status = "entrada";
                 break;
-            case 0: status = "";
+            case 0: status = "intermedio";
                 break;
             case -1: status = "exterior";
                 break;
             default: status = "";
                 break;
         }
-        return "Room{" + "name=" + name + ", ghost=" + ghost + ", type=" + status + '}';
+        return name;
     }
 }

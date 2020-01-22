@@ -1,13 +1,10 @@
 package HauntedHouse;
 
 import ed.exceptions.ElementNotFoundException;
-import ed.util.matrixGraph.UndirectedGraph;
+import ed.util.matrixGraph.DirectedNetwork;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,9 +15,22 @@ import org.json.simple.parser.ParseException;
  * @author Francisco Spínola
  * @author João Pereira
  */
-public class Map extends UndirectedGraph<Room> {
+public class Map<T> extends DirectedNetwork<T> {
     private String name;
-    private long points;
+    private long life;
+    
+    @Override
+    public void addVertex(T vertex) {
+        if (this.numVertices == this.vertices.length)
+            this.expandCapacity();
+        
+        this.vertices[this.numVertices] = vertex;
+        for (int i = 0; i < this.numVertices; i++) {
+            this.adjMatrix[this.numVertices][i] = Double.POSITIVE_INFINITY;
+            this.adjMatrix[i][this.numVertices] = Double.POSITIVE_INFINITY;
+        }
+        this.numVertices++;
+    }
     
     public Map() throws ElementNotFoundException {
         super();
@@ -33,7 +43,7 @@ public class Map extends UndirectedGraph<Room> {
             JSONObject jo = (JSONObject) obj; 
             
             this.name = (String) jo.get("nome");
-            this.points = (long) jo.get("pontos");
+            this.life = (long) jo.get("pontos");
             
             JSONArray rooms = (JSONArray) jo.get("mapa"); 
             
@@ -45,8 +55,7 @@ public class Map extends UndirectedGraph<Room> {
                 roomobj = (JSONObject) rooms.get(i);
                 Room room = new Room();
                 room.setName((String) roomobj.get("aposento"));
-                room.setGhost((long) roomobj.get("fantasma"));
-                super.addVertex(room);
+                this.addVertex((T)room);
                 i++;
             }
             
@@ -67,23 +76,20 @@ public class Map extends UndirectedGraph<Room> {
                     
                     //if the room is an entrance
                     if (type.equals("entrada")) {
-                        System.out.println(roomobj.get("aposento"));
                         int z = findRoom((String) roomobj.get("aposento"));
-                        room = super.vertices[z];
+                        room = (Room)super.vertices[z];
                         room.setType((short) 1);
                     } 
                     
                     // if the room is an exit
                     else if (type.equals("exterior")) {
-                        room = super.vertices[findRoom((String) roomobj.get("aposento"))];
+                        int z = findRoom((String) roomobj.get("aposento"));
+                        room = (Room) super.vertices[z];
                         room.setType((short) -1);
                     } else {
-                        int k = 0;
-                        while (k < super.numVertices && !super.vertices[k].getName().equals(room.getName())) k++;
-                        room.setGhost(super.vertices[k].getGhost());
-
                         try {
-                            super.addEdge(super.vertices[i], room);
+                            int z = findRoom((String) roomobj.get("aposento"));
+                            super.addEdge(super.vertices[findRoom(type)], super.vertices[z], (long) roomobj.get("fantasma"));
                         } catch (ElementNotFoundException ex) {}
                     }
                     j++;
@@ -103,7 +109,7 @@ public class Map extends UndirectedGraph<Room> {
         int i = 0;
         
         while (i < super.numVertices) {
-            Room room = super.vertices[i];
+            Room room = (Room) super.vertices[i];
             if (room.getName().equals(name))
                 return i;
             i++;
@@ -111,5 +117,27 @@ public class Map extends UndirectedGraph<Room> {
         if (i == super.numVertices)
             throw new ElementNotFoundException();
         return i;
+    }
+
+    @Override
+    public String toString() {
+        String s = "";
+        for (int i = 0; i < this.numVertices; i++) {
+            s += this.vertices[i] + "\t\t";
+        }
+        s += "\n";
+        
+        for (int i = 0; i < this.numVertices; i++) {
+            for (int j = 0; j < this.numVertices; j++) {
+                if (this.adjMatrix[i][j] == Double.POSITIVE_INFINITY)
+                    s += this.adjMatrix[i][j] + "\t";
+                else
+                    s += this.adjMatrix[i][j] + "\t\t";
+            }
+            s += this.vertices[i];
+            s += "\n";
+        }
+        
+        return s;
     }
 }
