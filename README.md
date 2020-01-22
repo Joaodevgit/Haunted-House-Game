@@ -33,11 +33,6 @@ O que foi feito neste commit:
 - Criação da classe Map que extende UndirectedGraph e não tem funcionalidades implementadas ainda
 - Criação da classe Room para implementar como aposento com as variáveis nome e ghost
 
-O que fazer para o próximo commit:
-
--
-
-
 --------------------------------------------------------------------------------------------------------
 
 21/01/2020 19:00 Autor: João Pereira Mensagem do Commit:"Modificacoes na classe TUI"
@@ -75,3 +70,19 @@ O que fazer para o próximo commit:
 
 - Modificar a classe Graph (quando fazem a verificaçao if (vertices[i] == 1) tem que ser if (vertices[i] != Double.POSITIVE_INFINITY)). Esta é a razao dos iteradores não funcionarem...
 - Acabar classe Network
+
+--------------------------------------------------------------------------------------------------------
+
+22/01/2020 15:30 Francisco Spínola, Commit: "Atualização da API"
+
+O que foi feito neste commit: 
+
+- A classe network foi atualizada: foi feito override dos métodos iteratorBFS, iteratorDFS e addVertex, da classe Graph.
+- A biblioteca da API foi reposta por esta nova atualizada
+
+O que falta fazer:
+
+- Acabar classe Network (métodos iteratorShortestPathWeight e shortestPathWeight)
+- Guardar/Carregar informações das classificações dos jogadores
+
+--------------------------------------------------------------------------------------------------------

@@ -5,7 +5,7 @@ import java.util.Scanner;
 /**
  *
  * @author Francisco Spínola
- * @author João Tiago Pereira
+ * @author João Pereira
  */
 public class TUI {
 
@@ -240,5 +240,4 @@ public class TUI {
         System.out.println("|                  Parabéns chegou à saída!                        | ");
         System.out.println("|__________________________________________________________________|");
     }
-
 }

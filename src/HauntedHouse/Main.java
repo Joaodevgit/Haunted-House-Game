@@ -15,8 +15,9 @@ public class Main {
     public static void main(String[] args) {
         try {
             Map<Room> map = new Map<>();
-            Room room = new Room("hall", (short) 1);
-            Iterator<Room> iter = map.iteratorBFS(room);
+            Room room1 = new Room("hall", (short) 1);
+            Room room2 = new Room("sala de estar", (short) -1);
+            Iterator<Room> iter = map.iteratorShortestPath(room1, room2);
             while (iter.hasNext()) {
                 System.out.println(iter.next().toString());
             }

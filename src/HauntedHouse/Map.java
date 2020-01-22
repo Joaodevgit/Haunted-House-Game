@@ -19,19 +19,6 @@ public class Map<T> extends DirectedNetwork<T> {
     private String name;
     private long life;
     
-    @Override
-    public void addVertex(T vertex) {
-        if (this.numVertices == this.vertices.length)
-            this.expandCapacity();
-        
-        this.vertices[this.numVertices] = vertex;
-        for (int i = 0; i < this.numVertices; i++) {
-            this.adjMatrix[this.numVertices][i] = Double.POSITIVE_INFINITY;
-            this.adjMatrix[i][this.numVertices] = Double.POSITIVE_INFINITY;
-        }
-        this.numVertices++;
-    }
-    
     public Map() throws ElementNotFoundException {
         super();
         
