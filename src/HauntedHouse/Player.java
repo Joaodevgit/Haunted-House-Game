@@ -5,34 +5,29 @@
  */
 package HauntedHouse;
 
-import ed.util.ArrayUnorderedList;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  *
  * @author Utilizador
  */
-public class Player {
+public class Player implements Comparable<Player> {
 
-    private long life;
+    private long highscore;
     private String name;
     private String mapName;
 
-    public Player(String name, Long life, String mapName) {
+    public Player(String name, long highscore, String mapName) {
         this.name = name;
-        this.life = life;
+        this.highscore = highscore;
         this.mapName = mapName;
     }
 
-    public long getLife() {
-        return life;
+    public long getHighscore() {
+        return highscore;
     }
 
-    public void setLife(long life) {
-        this.life = life;
+    public void setHighscore(long highscore) {
+        this.highscore = highscore;
     }
 
     public String getName() {
@@ -50,5 +45,14 @@ public class Player {
     public void setMapName(String mapName) {
         this.mapName = mapName;
     }
-    
+
+    @Override
+    public int compareTo(Player o) {
+        if (this.highscore > o.highscore) {
+            return 1;
+        } else if (this.highscore == o.highscore) {
+            return 0;
+        } else
+            return -1;
+    }
 }

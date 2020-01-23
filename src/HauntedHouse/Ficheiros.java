@@ -17,27 +17,21 @@ import java.util.Iterator;
  * @author Utilizador
  */
 public class Ficheiros {
-    
- public void writePlayersRankingInfo(String path, ArrayOrderedList<Player> playersRanking) throws IOException {
+
+    public void writePlayersRankingInfo(String path, ArrayOrderedList<Player> playersRanking) throws IOException {
 
         File file = new File(path);
-        
+
         Iterator<Player> iter = playersRanking.iterator();
-            while (iter.hasNext()) {
-                iter.next().getName();
-            }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            while () {
-                writer.write("Jogador: " + playersRanking.iterator(). + " - Pontos: " + playerPoints
-                    + " - Mapa: " + nomeMapa);
+            while (iter.hasNext()) {
+                writer.write("Jogador: " + iter.next().getName() + " - Pontos: " + iter.next().getHighscore()
+                        + " - Mapa: " + iter.next().getMapName());
+                writer.newLine();
             }
-            
-            writer.newLine();
             writer.flush();
             writer.close();
-        } 
+        }
     }
-    
 }
-
