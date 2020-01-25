@@ -11,26 +11,33 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 /**
+ * <p>Classe responsável por carregar o mapa, fazendo o parsing de um ficheiro JSON, que contem as informações
+ * relativas a este.</p>
+ * <p>É uma rede direcionada devido ao peso, que neste caso é atribuído pelos pontos por que fantasma, por
+ * aposento, é valorizado.</p>
  *
  * @author Francisco Spínola
- * @author João Pereira
  */
 public class Map<T> extends DirectedNetwork<T> {
     private String name;
-    private long life;
+    private long points;
     
+    /**
+     * <p>Parser de JSON para Java, carregando o mapa presente num ficheiro <i>mapa.json</i>.</p>
+     * <p>Instancia também a rede direcionada com nós que simbolizam cada aposento.</p>
+     */
     public Map() throws ElementNotFoundException {
         super();
         
         try {
-            // parsing file "Mapa.json" 
-            Object obj = new JSONParser().parse(new FileReader("mapa.json")); 
+            //parsing file "Mapa.json" 
+            Object obj = new JSONParser().parse(new FileReader("lib/mapa.json")); 
 
-            // typecasting obj to JSONObject 
+            //typecasting obj to JSONObject 
             JSONObject jo = (JSONObject) obj; 
             
             this.name = (String) jo.get("nome");
-            this.life = (long) jo.get("pontos");
+            this.points = (long) jo.get("pontos");
             
             JSONArray rooms = (JSONArray) jo.get("mapa"); 
             
@@ -91,7 +98,33 @@ public class Map<T> extends DirectedNetwork<T> {
             System.out.println("error: parsing from json failed.");
         }
     }
+
+    /**
+     * Obtenção do nome do mapa
+     * 
+     * @return nome do mapa
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Obtenção dos pontos de vida iniciais do mapa
+     * 
+     * @return pontos de vida
+     */
+    public long getPoints() {
+        return points;
+    }
     
+    /**
+     * Método responsável por encontrar, nos vértices/nós da rede (grafo), o aposento que possua o nome passado 
+     * por argumento.
+     * 
+     * @param name nome do aposento
+     * @return índice do aposento no <i>array</i> de vértices do grafo
+     * @throws ElementNotFoundException caso não seja encontrado o aposento com o nome dado
+     */
     private int findRoom (String name) throws ElementNotFoundException {
         int i = 0;
         

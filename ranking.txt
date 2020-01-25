@@ -1,2 +1,2 @@
-Jogador: Spino - Pontos: 10 - Mapa: Maze
-Jogador: Hacker - Pontos: 12 - Mapa: Mazev2
+Jogador: Hacker - Pontos: 9 - Mapa: Maze
+Jogador: Joao - Pontos: 12 - Mapa: Mazev2

@@ -86,3 +86,25 @@ O que falta fazer:
 - Guardar/Carregar informações das classificações dos jogadores
 
 --------------------------------------------------------------------------------------------------------
+
+25/01/2020 12:00 Francisco Spínola, Commit: "Atualização"
+
+O que foi feito neste commit:
+
+- Foi criada a pasta lib que contém os requisitos para a execução do programa.
+- A biblioteca da API foi atualizada (método removeVertex em Network estava em falta e foram removidos os métodos toString() das coleções).
+- Foi criada a interface gráfica do jogo (Classe GUI).
+- Foram adicionados recursos (imagens, sons,...).
+- Ficheiros implementador por Francisco Spínola foram documentados.
+
+O que falta fazer:
+
+- Guardar e carregar classificações de jogadores em ficheiro.
+- Gerar visualmente uma tabela de classificações.
+- Criar modo normal e modo simualação do jogo.
+- Acabar classe Network (2 métodos).
+- Gerar 2 variáveis: a primeira guarda os pontos de vida que o jogador tem e a outra guarda a posição atual do jogador (em que aposento se encontra).
+- Documentar o resto do código.
+
+--------------------------------------------------------------------------------------------------------
+

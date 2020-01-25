@@ -1,10 +1,6 @@
 package HauntedHouse;
 
-import ed.adt.OrderedListADT;
 import ed.exceptions.ElementNotFoundException;
-import ed.exceptions.EmptyCollectionException;
-import ed.util.ArrayOrderedList;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,21 +14,8 @@ public class Main {
     public static void main(String[] args) {
         try {
             Map<Room> map = new Map<>();
-            Room room1 = new Room("hall", (short) 1);
-            Room room2 = new Room("sala de estar", (short) -1);
-            Iterator<Room> iter = map.iteratorBFS(room1);
             
-            OrderedListADT<Integer> list = new ArrayOrderedList<>();
-            list.add(3);
-            list.add(4);
-            list.add(0);
-            list.add(25);
-            list.add(-4);
-            list.add(1);
-            System.out.println(list.toString());
-            while (iter.hasNext()) {
-                //System.out.println(iter.next().toString());
-            }
+            /*
             Player jogador1 = new Player("Joao", 10, "Maze");
             Player jogador2 = new Player("Spino", 9, "Mazev2");
             Player jogador3 = new Player("Player", 12, "Mazev1");
@@ -46,12 +29,14 @@ public class Main {
             players.add(jogador4);
             players.add(jogador5);
             players.add(jogador6);
-
-            Ficheiros ficheiro = new Ficheiros();
+            */
             
+            new GUI(map);
+            
+            /*
+            Ficheiros ficheiro = new Ficheiros();
             ficheiro.writePlayersRankingInfo("ranking.txt", (ArrayOrderedList<Player>) players);
-        } catch (EmptyCollectionException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            */
         } catch (ElementNotFoundException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         } catch (Exception ex) {

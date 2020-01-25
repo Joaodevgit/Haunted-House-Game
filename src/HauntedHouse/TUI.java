@@ -4,7 +4,6 @@ import java.util.Scanner;
 
 /**
  *
- * @author Francisco Spínola
  * @author João Pereira
  */
 public class TUI {
@@ -49,7 +48,7 @@ public class TUI {
         System.out.println("|                                                                  |");
         System.out.println("|                     Casa Assombrada                              |");
         System.out.println("|                                                                  |");
-        System.out.println("|                  Bem vindo " + name + " !                         |");
+        System.out.println("|                  Bem vindo " + name + "!                          |");
         System.out.println("|                                                                  |");
         System.out.println("|            Dificuldade de jogo atual: " + difficulty + "                     |");
         System.out.println("|                                                                  |");

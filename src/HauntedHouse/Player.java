@@ -1,14 +1,8 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package HauntedHouse;
-
 
 /**
  *
- * @author Utilizador
+ * @author João Pereira
  */
 public class Player implements Comparable<Player> {
 
