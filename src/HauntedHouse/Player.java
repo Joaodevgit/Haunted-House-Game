@@ -15,6 +15,9 @@ public class Player implements Comparable<Player> {
         this.highscore = highscore;
         this.mapName = mapName;
     }
+    public Player(long highscore){
+        this.highscore = highscore;
+    }
 
     public long getHighscore() {
         return highscore;
@@ -42,7 +45,7 @@ public class Player implements Comparable<Player> {
 
     @Override
     public int compareTo(Player o) {
-        if (this.highscore > o.highscore) {
+        if (this.highscore < o.highscore) {
             return 1;
         } else if (this.highscore == o.highscore) {
             return 0;

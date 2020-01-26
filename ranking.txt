@@ -1,2 +1,8 @@
-Jogador: Hacker - Pontos: 9 - Mapa: Maze
-Jogador: Joao - Pontos: 12 - Mapa: Mazev2
+Jogador: Hacker - Pontos: 20 - Mapa: Maze
+Jogador: Joao - Pontos: 19 - Mapa: Mazev2
+Jogador: Joao1 - Pontos: 18 - Mapa: Mazev2
+Jogador: Joao2 - Pontos: 17 - Mapa: Mazev2
+Jogador: Joao3 - Pontos: 16 - Mapa: Mazev2
+Jogador: Joao4 - Pontos: 15 - Mapa: Mazev2
+Jogador: Joao5 - Pontos: 14 - Mapa: Mazev2
+

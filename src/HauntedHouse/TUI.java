@@ -1,22 +1,32 @@
 package HauntedHouse;
 
+import ed.exceptions.ElementNotFoundException;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
- *
+ * @author Francisco Spínola
  * @author João Pereira
  */
 public class TUI {
 
-    public TUI() {
+    Map<Room> map;
+
+    public final int EASY = 1;
+    public final int NORMAL = 2;
+    public final int HARD = 3;
+
+    public TUI(Map map, Player player) throws ElementNotFoundException {
+        this.map = new Map<>();
         Scanner sc = new Scanner(System.in);
         int o;
         int dc = getInitialDifficultyChoice();
 
-        String playerName = getPlayerName();
+        player.setName(getPlayerName());
         do {
             do {
-                this.Screen_MainMenu(playerName, getDifficulty(dc));
+                this.Screen_MainMenu(player.getName(), getDifficulty(dc));
                 System.out.println("Introduza opção: ");
                 while (!sc.hasNextInt()) {
                     System.out.println("Opção com formato inválido!");
@@ -27,6 +37,7 @@ public class TUI {
             switch (o) {
                 case 1:
                     this.Screen_NormalGameMode();
+                    map.menuModoNormal(map.getEntranceRoom(), player, dc);
                     break;
                 case 2:
                     this.Screen_SimulationGameMode();
@@ -96,15 +107,15 @@ public class TUI {
             } while (opt < 0 || opt > 3);
             switch (opt) {
                 case 1:
-                    choice = 1;
+                    choice = EASY;
                     System.out.println("Escolheu a dificuldade Básico!");
                     break;
                 case 2:
-                    choice = 2;
+                    choice = NORMAL;
                     System.out.println("Escolheu a dificuldade Normal!");
                     break;
                 case 3:
-                    choice = 3;
+                    choice = HARD;
                     System.out.println("Escolheu a dificuldade Difícil!");
                     break;
                 default:
@@ -138,15 +149,15 @@ public class TUI {
             } while (opt < 0 || opt > 3);
             switch (opt) {
                 case 1:
-                    choice = 1;
+                    choice = EASY;
                     System.out.println("Escolheu a dificuldade Básico!");
                     break;
                 case 2:
-                    choice = 2;
+                    choice = NORMAL;
                     System.out.println("Escolheu a dificuldade Normal!");
                     break;
                 case 3:
-                    choice = 3;
+                    choice = HARD;
                     System.out.println("Escolheu a dificuldade Difícil!");
                     break;
                 default:

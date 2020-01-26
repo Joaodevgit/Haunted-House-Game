@@ -1,5 +1,6 @@
 package HauntedHouse;
 
+import ed.adt.OrderedListADT;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -11,8 +12,14 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -33,6 +40,7 @@ import javax.swing.JTextField;
  * <i>Graphical User Interface</i>
  *
  * @author Francisco Spínola
+ * @author João Pereira
  */
 public class GUI implements ActionListener {
 
@@ -54,23 +62,29 @@ public class GUI implements ActionListener {
     private JFrame player;
     private Clip clip;
 
+    //private OrderedListADT<Player> ranking;
     /**
-     * <p><strong>Estado do programa</strong></p>
-     * <p>0: Escolha do nível de dificuldade</p>
-     * <p>1: Escolha do nome do jogador</p>
-     * <p>2: Menu principal</p>
+     * <p>
+     * <strong>Estado do programa</strong></p>
+     * <p>
+     * 0: Escolha do nível de dificuldade</p>
+     * <p>
+     * 1: Escolha do nome do jogador</p>
+     * <p>
+     * 2: Menu principal</p>
      */
     private short status;
 
     /**
-     * Método construtor para a GUI. Chama o método responsável pela escolha do nível de dificuldade.
-     * 
+     * Método construtor para a GUI. Chama o método responsável pela escolha do
+     * nível de dificuldade.
+     *
      * @param map mapa do jogo
      */
     public GUI(Map map) throws IOException {
         this.sound = true;
         this.easy = new JButton(new ImageIcon(ImageIO.read(new File("lib/easy.png"))));
-        this.normal  = new JButton(new ImageIcon(ImageIO.read(new File("lib/normal2.png"))));
+        this.normal = new JButton(new ImageIcon(ImageIO.read(new File("lib/normal2.png"))));
         this.hard = new JButton(new ImageIcon(ImageIO.read(new File("lib/hard.png"))));
         this.map = map;
         this.status = 0;
@@ -126,7 +140,7 @@ public class GUI implements ActionListener {
         this.normal.addActionListener(this);
         this.hard.addActionListener(this);
     }
-    
+
     /**
      * Altera o estado da música (ligada/desligada).
      */
@@ -194,25 +208,28 @@ public class GUI implements ActionListener {
         this.normalMode = new JButton(new ImageIcon(ImageIO.read(new File("lib/normal.png"))));
         this.simulationMode = new JButton(new ImageIcon(ImageIO.read(new File("lib/simulation.png"))));
         this.soundB = new JButton(new ImageIcon(ImageIO.read(new File("lib/sound.png"))));
-        
+
         //Adding content to the frame
         this.menu.add(new BackgroundPane());
-        
+
         //Configuring the frame
         this.menu.setUndecorated(true);
         this.menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.menu.setResizable(false);
-        this.menu.setSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth(), GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight());
+        this.menu.setSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                getDisplayMode().getWidth(), GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                        getDisplayMode().getHeight());
         this.menu.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.menu.setLocationRelativeTo(null);
         this.menu.setVisible(true);
-        
+
         this.clip = AudioSystem.getClip();
         AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/Fable-Lychfield-Cemetary.wav"));
         this.clip.open(inputStream);
-        if (this.sound)
+        if (this.sound) {
             this.clip.start();
-        
+        }
+
         //Adding the listeners
         this.close.addActionListener(this);
         this.normalMode.addActionListener(this);
@@ -226,12 +243,17 @@ public class GUI implements ActionListener {
      * Classe que estrutura o menu principal
      */
     class BackgroundPane extends JPanel {
+
         /**
          * Método construtor que estrutura o menu principal do jogo
          */
         public BackgroundPane() throws IOException {
             setLayout(new BorderLayout());
-            JLabel label = new JLabel(new ImageIcon(ImageIO.read(new File("lib/background.jpg")).getScaledInstance(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth(), GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight(), Image.SCALE_DEFAULT)));
+            JLabel label = new JLabel(new ImageIcon(
+                    ImageIO.read(new File("lib/background.jpg")).getScaledInstance(GraphicsEnvironment.
+                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth(),
+                            GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                                    getDisplayMode().getHeight(), Image.SCALE_DEFAULT)));
 
             add(label);
 
@@ -255,7 +277,7 @@ public class GUI implements ActionListener {
 
         /**
          * Método que altera o formato visual de um <i>JButton</i>.
-         * 
+         *
          * @param btn botão a ser alterado
          * @return botão alterado
          */
@@ -267,7 +289,7 @@ public class GUI implements ActionListener {
             return btn;
         }
     }
-    
+
     /**
      * Jogo em Modo Simulação.
      */
@@ -275,38 +297,106 @@ public class GUI implements ActionListener {
         this.clip = AudioSystem.getClip();
         AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/gamemusic.wav"));
         this.clip.open(inputStream);
-        if (this.sound)
+        if (this.sound) {
             this.clip.start();
+        }
     }
-    
+
     /**
-     * Jogo em Modo Normal. 
+     * Jogo em Modo Normal.
      */
     private void normal() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.clip = AudioSystem.getClip();
         AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/gamemusic.wav"));
         this.clip.open(inputStream);
-        if (this.sound)
+        if (this.sound) {
             this.clip.start();
+        }
     }
-    
+
     /**
      * Mostra as classificações do jogo.
      */
     private void highscore() {
-        
+        try {
+            String[] rankingArray = loadRankingFile();
+            String rankList = "";
+            for (int j = 0; j < rankingArray.length; j++) {
+                String playerInfo = rankingArray[j];
+                rankList += playerInfo + "\n";
+            }
+            JOptionPane.showMessageDialog(null, rankList, "Classificação TOP10", JOptionPane.INFORMATION_MESSAGE);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void writePlayersRankingInfo(String path, OrderedListADT<Player> playersRanking) throws IOException {
+
+        File file = new File(path);
+        Iterator<Player> iter = playersRanking.iterator();
+        int i = 1;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            while (iter.hasNext()) {
+                writer.write(i + "º " + " - Jogador: " + iter.next().getName() + " - Pontos: " + iter.next().getHighscore()
+                        + " - Mapa: " + iter.next().getMapName());
+                writer.newLine();
+                i++;
+            }
+            writer.flush();
+            writer.close();
+        }
+    }
+
+    public String[] loadRankingFile() throws FileNotFoundException {
+        File file = new File("ranking.txt");
+        String rankingArray[];
+        if (lineRankingFileCounter() < 10) {
+            rankingArray = new String[lineRankingFileCounter()];
+        } else {
+            rankingArray = new String[10];
+        }
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        int i = 0;
+        String st;
+        try {
+            while ((st = br.readLine()) != null) {
+                rankingArray[i] = st;
+                i++;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Ficheiros.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return rankingArray;
+    }
+
+    public int lineRankingFileCounter() throws FileNotFoundException {
+        File file = new File("ranking.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        int i = 0;
+        try {
+            while (br.readLine() != null) {
+                i++;
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Ficheiros.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return i;
     }
 
     /**
-     * Método responsável por definir o que se sucede aquando determinada ação é executada.
-     * 
+     * Método responsável por definir o que se sucede aquando determinada ação é
+     * executada.
+     *
      * @param ev evento
      */
     @Override
     public void actionPerformed(ActionEvent ev) {
         String[] ok = {"OK"};
         if (ev.getSource().equals(this.easy)) {
-            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Básico", "Aviso", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
+            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Básico", "Aviso",
+                    JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
             this.level.dispose();
             if (this.status == 0) {
                 this.status = 1;
@@ -317,7 +407,8 @@ public class GUI implements ActionListener {
                 }
             }
         } else if (ev.getSource().equals(this.normal)) {
-            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Normal", "Aviso", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
+            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Normal", "Aviso",
+                    JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
             this.level.dispose();
             if (this.status == 0) {
                 this.status = 1;
@@ -328,7 +419,8 @@ public class GUI implements ActionListener {
                 }
             }
         } else if (ev.getSource().equals(this.hard)) {
-            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Difícil", "Aviso", JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
+            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Difícil", "Aviso",
+                    JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
             this.level.dispose();
             if (this.status == 0) {
                 this.status = 1;
@@ -340,20 +432,18 @@ public class GUI implements ActionListener {
             }
         } else if (ev.getSource().equals(this.ok)) {
             if (this.playerName.getText().equals("")) {
-                JOptionPane.showOptionDialog(this.player, "Campo vazio!", "Aviso", JOptionPane.OK_OPTION, JOptionPane.WARNING_MESSAGE, null, ok, ok[0]);
+                JOptionPane.showOptionDialog(this.player, "Campo vazio!", "Aviso",
+                        JOptionPane.OK_OPTION, JOptionPane.WARNING_MESSAGE, null, ok, ok[0]);
             } else if (!this.playerName.getText().matches("^[a-zA-Z0-9 ]+$")) {
-                JOptionPane.showOptionDialog(this.player, "Insira apenas carateres alfanuméricos!", "Aviso", JOptionPane.OK_OPTION, JOptionPane.WARNING_MESSAGE, null, ok, ok[0]);
+                JOptionPane.showOptionDialog(this.player, "Insira apenas carateres alfanuméricos!", "Aviso",
+                        JOptionPane.OK_OPTION, JOptionPane.WARNING_MESSAGE, null, ok, ok[0]);
             } else {
                 this.player.dispose();
                 if (this.status == 1) {
                     this.status = 2;
                     try {
                         this.mainMenu();
-                    } catch (IOException ex) {
-                        Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (UnsupportedAudioFileException ex) {
-                        Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (LineUnavailableException ex) {
+                    } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
                         Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -363,27 +453,19 @@ public class GUI implements ActionListener {
         } else if (ev.getSource().equals(this.levelChange)) {
             this.levelChanger();
         } else if (ev.getSource().equals(this.highscore)) {
-             this.highscore();
+            this.highscore();
         } else if (ev.getSource().equals(this.normalMode)) {
             this.clip.stop();
             try {
                 this.normal();
-            } catch (LineUnavailableException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (UnsupportedAudioFileException ex) {
+            } catch (LineUnavailableException | IOException | UnsupportedAudioFileException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (ev.getSource().equals(this.simulationMode)) {
             this.clip.stop();
             try {
                 this.simulation();
-            } catch (LineUnavailableException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (UnsupportedAudioFileException ex) {
+            } catch (LineUnavailableException | IOException | UnsupportedAudioFileException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (ev.getSource().equals(this.soundB)) {

@@ -75,7 +75,7 @@ O que fazer para o próximo commit:
 
 22/01/2020 15:30 Francisco Spínola, Commit: "Atualização da API"
 
-O que foi feito neste commit: 
+O que foi feito neste commit:
 
 - A classe network foi atualizada: foi feito override dos métodos iteratorBFS, iteratorDFS e addVertex, da classe Graph.
 - A biblioteca da API foi reposta por esta nova atualizada
@@ -108,3 +108,27 @@ O que falta fazer:
 
 --------------------------------------------------------------------------------------------------------
 
+25/01/2020  João Pereira Commit:""
+
+O que foi feito neste commit:
+
+- Criação de 2 métodos de leitura e escrita para ficheiro .txt (ranking.txt) que irá ser responsável pela persistência de dados acerca da informação dos jogadores que conseguiram achar a saída do mapa
+- Guardar e carregar classificações de jogadores em ficheiro.
+- Gerar visualmente uma tabela de classificações.
+- Criação dos métodos getEdgeWeight (responsável por retornar o custo entre 2 aposentos) , getRoomEdges(responsável por retornar um array de aposentos que estão ligados a um dado aposento) e getEntranceRoom (responsável por retornar o primeiro ponto que é a entrada)
+se o resultado do fim do jogo for maior do que o nº10 do ranking atualizo a lista com o novo gajo e o ultimo gajo da lista é removida
+- Criação do método
+
+O que fazer para o próximo commit:
+
+- Criar modo normal e modo simualação do jogo.
+- Acabar classe Network (2 métodos).
+- Gerar 2 variáveis: a primeira guarda os pontos de vida que o jogador tem e a outra guarda a posição atual do jogador (em que aposento se encontra).
+- Documentar o resto do código.
+- Corrigir o iterador da lista ordenada
+- Após a correção do iterador trocar os "tradicionais" arrays por listas não ordenadas
+- Acabar o método getEdgeWeight(ou seja retornar o peso de uma ligação entre dois aposentos de modo a que possa descontar no utilizador)
+- Ver como temos que fazer com que o jogador chegue ao exterior
+
+Dúvidas:
+- Consideramos que o primeiro elemento do array de aposentos no formato de JSON é o aposento de entrada do mapa ou não?
