@@ -1,11 +1,15 @@
 package HauntedHouse;
 
 import Exceptions.InvalidTypeException;
+import ed.adt.UnorderedListADT;
 import ed.exceptions.ElementNotFoundException;
+import ed.util.ArraySearch;
+import ed.util.ArrayUnorderedList;
 import ed.util.matrixGraph.DirectedNetwork;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.Scanner;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -25,8 +29,8 @@ import org.json.simple.parser.ParseException;
  */
 public class Map<T> extends DirectedNetwork<T> {
 
-    private String name;
-    private long points;
+    private final String name;
+    private final long points;
 
     /**
      * <p>
@@ -37,76 +41,69 @@ public class Map<T> extends DirectedNetwork<T> {
      * aposento.</p>
      *
      * @throws ed.exceptions.ElementNotFoundException
+     * @throws java.io.FileNotFoundException
+     * @throws org.json.simple.parser.ParseException
      */
-    public Map() throws ElementNotFoundException {
+    public Map() throws ElementNotFoundException, FileNotFoundException, IOException, ParseException {
         super();
+        //parsing file "Mapa.json" 
+        Object obj = new JSONParser().parse(new FileReader("lib/mapa.json"));
 
-        try {
-            //parsing file "Mapa.json" 
-            Object obj = new JSONParser().parse(new FileReader("lib/mapa.json"));
+        //typecasting obj to JSONObject 
+        JSONObject jo = (JSONObject) obj;
 
-            //typecasting obj to JSONObject 
-            JSONObject jo = (JSONObject) obj;
+        this.name = (String) jo.get("nome");
+        this.points = (long) jo.get("pontos");
 
-            this.name = (String) jo.get("nome");
-            this.points = (long) jo.get("pontos");
+        JSONArray rooms = (JSONArray) jo.get("mapa");
 
-            JSONArray rooms = (JSONArray) jo.get("mapa");
+        //setting vertexes
+        int i = 0;
+        JSONObject roomobj;
+        //rooms iterator
+        while (i < rooms.size()) {
+            roomobj = (JSONObject) rooms.get(i);
+            Room room = new Room();
+            room.setName((String) roomobj.get("aposento"));
+            this.addVertex((T) room);
+            i++;
+        }
 
-            //setting vertexes
-            int i = 0;
-            JSONObject roomobj;
-            //rooms iterator
-            while (i < rooms.size()) {
-                roomobj = (JSONObject) rooms.get(i);
-                Room room = new Room();
-                room.setName((String) roomobj.get("aposento"));
-                this.addVertex((T) room);
-                i++;
-            }
+        //setting edges
+        i = 0;
 
-            //setting edges
-            i = 0;
+        //rooms iterator
+        while (i < rooms.size()) {
+            roomobj = (JSONObject) rooms.get(i);
+            JSONArray ligacoes = (JSONArray) roomobj.get("ligacoes");
+            int j = 0;
+            Room room = new Room();
+            room.setName((String) roomobj.get("aposento"));
 
-            //rooms iterator
-            while (i < rooms.size()) {
-                roomobj = (JSONObject) rooms.get(i);
-                JSONArray ligacoes = (JSONArray) roomobj.get("ligacoes");
-                int j = 0;
-                Room room = new Room();
-                room.setName((String) roomobj.get("aposento"));
+            //connections iterator
+            while (j < ligacoes.size()) {
+                String type = (String) ligacoes.get(j);
 
-                //connections iterator
-                while (j < ligacoes.size()) {
-                    String type = (String) ligacoes.get(j);
-
-                    //if the room is an entrance
-                    if (type.equals("entrada")) {
+                //if the room is an entrance
+                if (type.equals("entrada")) {
+                    int z = findRoom((String) roomobj.get("aposento"));
+                    room = (Room) super.vertices[z];
+                    room.setType((short) 1);
+                } // if the room is an exit
+                else if (type.equals("exterior")) {
+                    int z = findRoom((String) roomobj.get("aposento"));
+                    room = (Room) super.vertices[z];
+                    room.setType((short) -1);
+                } else {
+                    try {
                         int z = findRoom((String) roomobj.get("aposento"));
-                        room = (Room) super.vertices[z];
-                        room.setType((short) 1);
-                    } // if the room is an exit
-                    else if (type.equals("exterior")) {
-                        int z = findRoom((String) roomobj.get("aposento"));
-                        room = (Room) super.vertices[z];
-                        room.setType((short) -1);
-                    } else {
-                        try {
-                            int z = findRoom((String) roomobj.get("aposento"));
-                            super.addEdge(super.vertices[findRoom(type)], super.vertices[z], (long) roomobj.get("fantasma"));
-                        } catch (ElementNotFoundException ex) {
-                        }
+                        super.addEdge(super.vertices[findRoom(type)], super.vertices[z], (long) roomobj.get("fantasma"));
+                    } catch (ElementNotFoundException ex) {
                     }
-                    j++;
                 }
-                i++;
+                j++;
             }
-        } catch (FileNotFoundException ex) {
-            System.out.println("error: map not found.");
-        } catch (IOException ex) {
-            System.out.println("error: input/output error.");
-        } catch (ParseException ex) {
-            System.out.println("error: parsing from json failed.");
+            i++;
         }
     }
 
@@ -137,7 +134,7 @@ public class Map<T> extends DirectedNetwork<T> {
      */
     public Room getEntranceRoom() throws ElementNotFoundException {
         int i = 0;
-        while (i < super.vertices.length && ((Room) super.vertices[i]).getType() == 0) {
+        while (i < super.numVertices && ((Room) super.vertices[i]).getType() != 1) {
             i++;
         }
         if (i == super.numVertices) {
@@ -179,91 +176,174 @@ public class Map<T> extends DirectedNetwork<T> {
      * @return custo entre os 2 aposentos
      * @throws ElementNotFoundException caso um dos vértices não seja válido
      */
-    public double getEdgeWeight(String srcEdge, String destEdge) throws ElementNotFoundException {
+    public long getEdgeWeight(String srcEdge, String destEdge) throws ElementNotFoundException {
         int srcPos = findRoom(srcEdge);
         int destPos = findRoom(destEdge);
 
-        if (srcPos == super.numVertices && destPos == super.numVertices) {
-            throw new ElementNotFoundException();
-        } else {
-            return super.adjMatrix[srcPos][destPos];
-        }
+        return (long) super.adjMatrix[srcPos][destPos];
     }
 
     /**
-     * Método responsável por retornar um array de aposentos que têm ligação com
-     * o aposento a ser passado por parâmetro
+     * Método responsável por retornar uma lista não ordenada de aposentos que
+     * têm ligação com o aposento a ser passado por parâmetro
      *
      * @param name nome do aposento que se pretende obter as ligações com outros
      * aposentos
-     * @return array de aposentos ligados ao nome
+     * @return lista não ordenada de aposentos ligados ao nome do aposento
      * @throws ElementNotFoundException caso o nome do aposento não seja
      * enontrado
      */
-    public Room[] getRoomEdges(String name) throws ElementNotFoundException {
+    public ArrayUnorderedList<Room> getRoomEdges(String name) throws ElementNotFoundException {
+        ArrayUnorderedList<Room> commonRooms = new ArrayUnorderedList<>();
         int pos = findRoom(name);
-        Room[] temp_commonRooms = new Room[this.numVertices];
-        int j = 0;
-        if (pos == super.numVertices) {
-            throw new ElementNotFoundException();
-        } else {
-            for (int i = 0; i < this.numVertices; i++) {
-                if (super.adjMatrix[pos][i] != Double.POSITIVE_INFINITY) {
-                    temp_commonRooms[j] = (Room) super.vertices[i];
-                    j++;
-                }
+        for (int i = 0; i < super.numVertices; i++) {
+            if (super.adjMatrix[pos][i] != Double.POSITIVE_INFINITY) {
+                commonRooms.addToRear((Room) super.vertices[i]);
             }
-            Room[] commonRoom = new Room[j];
-            for (int i = 0; i < commonRoom.length; i++) {
-                commonRoom[i] = temp_commonRooms[i];
-            }
-            return commonRoom;
         }
+        return commonRooms;
+//        int pos = findRoom(name);
+//        Room[] temp_commonRooms = new Room[super.numVertices - 1];
+//        int j = 0;
+//        for (int i = 0; i < super.numVertices; i++) {
+//            if (super.adjMatrix[pos][i] != Double.POSITIVE_INFINITY) {
+//                temp_commonRooms[j] = (Room) super.vertices[i];
+//                j++;
+//            }
+//        }
+//        Room[] commonRoom = new Room[j];
+//        for (int i = 0; i < commonRoom.length; i++) {
+//            commonRoom[i] = temp_commonRooms[i];
+//        }
+//        return commonRoom;
     }
 
-    public Room[] printCommonRooms(Room room) throws ElementNotFoundException {
-        Room[] rooms = getRoomEdges(room.getName());
+    /**
+     * Método responsável por
+     *
+     * @param room
+     * @return
+     * @throws ElementNotFoundException
+     */
+    public ArrayUnorderedList<Room> printCommonRooms(Room room) throws ElementNotFoundException {
+        ArrayUnorderedList<Room> rooms = getRoomEdges(room.getName());
+        Iterator<Room> iter = rooms.iterator();
+        int i = 0;
         System.out.println("Escolha um aposento: ");
-        for (int i = 0; i < rooms.length; i++) {
-            System.out.println((i + 1) + " - " + rooms[i].getName());
+        while (iter.hasNext()) {
+            Room roomIter = iter.next();
+            System.out.println((i + 1) + " - " + roomIter.getName());
+            i++;
         }
         if (room.getType() == -1) {
-            System.out.println((rooms.length + 1) + " - Exterior");
+            System.out.println((rooms.size() + 1) + " - Exterior");
         }
         return rooms;
+//        Room[] rooms = getRoomEdges(room.getName());
+//        System.out.println("Escolha um aposento: ");
+//        for (int i = 0; i < rooms.length; i++) {
+//            System.out.println((i + 1) + " - " + rooms[i].getName());
+//        }
+//        if (room.getType() == -1) {
+//            System.out.println((rooms.length + 1) + " - Exterior");
+//        }
+//        return rooms;
     }
 
-    public void menuModoNormal(Room room, Player player, int difficulty) throws ElementNotFoundException {
+    /**
+     * Método responsável por retornar o aposento em comun escolhido pelo
+     * utilizador
+     *
+     * @param room aposento a ser procurado na lista não ordenada
+     * @param option opção que o utilizador escolheu
+     * @return aposento em comun escolhido pelo utilizador
+     * @throws ElementNotFoundException caso o aposento não exista
+     * @throws ArrayIndexOutOfBoundsException caso o nº de option esteja fora do
+     * intervalo
+     */
+    public String findCommonRoom(Room room, int option) throws ElementNotFoundException, ArrayIndexOutOfBoundsException {
+
+        ArrayUnorderedList<Room> commonRooms = getRoomEdges(room.getName());
+        if (option < 0 || option > commonRooms.size() - 1) {
+            throw new ArrayIndexOutOfBoundsException();
+        }
+        Iterator<Room> iter = commonRooms.iterator();
+        int i = 0;
+        while (iter.hasNext() && i != option) {
+            i++;
+            iter.next();
+        }
+        return iter.next().getName();
+    }
+
+    /**
+     * Método responsávelo por simular o modo de jogo "Normal"
+     * @param room aposento que irá servir como um ponto de partida
+     * @param instance 
+     * @throws ElementNotFoundException caso o aposento não seja encontrado
+     */
+    public void menuModoNormal(Room room, Instance instance) throws ElementNotFoundException {
         Scanner sc = new Scanner(System.in);
-        Room currentRoom = room;
-        Room[] choiceRooms;
+        ArrayUnorderedList<Room> choiceRooms;
+        instance.setPos(room);
+        TUI tui = new TUI();
         int a;
         do {
             do {
-                System.out.println("Pontos de jogador atuais: " + player.getHighscore());
-                System.out.println("Aposento atual: " + currentRoom.getName());
-                choiceRooms = this.printCommonRooms(currentRoom);
+                System.out.println("Pontos de jogador atuais: " + instance.getScore());
+                System.out.println("Aposento atual: " + instance.getPos().getName());
+                choiceRooms = this.printCommonRooms(instance.getPos());
                 System.out.println("Escolha um aposento: ");
                 while (!sc.hasNextInt()) {
                     System.out.println("Opção com formato inválido!");
                     sc.next();
                 }
                 a = sc.nextInt();
-            } while (a < 0 || a > choiceRooms.length + 1);
-            
-            if (a != 0 && player.getHighscore() > 0) {
-                double roomPoints = getEdgeWeight(currentRoom.getName(), choiceRooms[a - 1].getName());
-                if (roomPoints != 0) {
-                    points -= roomPoints * difficulty;
-                    player.setHighscore(points);
-                }
-                currentRoom = choiceRooms[a - 1];
-                if (player.getHighscore() < 0) {
-                    System.out.println("Game Over Player Morto");
-                    a = 0;
-                }
-            }
+            } while (a < 0 || a > choiceRooms.size());
+
+//            if (instance.getScore() > 0 &&) {
+//
+//                long roomPoints = getEdgeWeight(instance.getPos().getName(), choiceRooms[a - 1].getName());
+//                if (roomPoints != 0) {
+//                    instance.setScore(instance.getScore() - (roomPoints * instance.getLevel()));
+//                }
+//                instance.setPos(choiceRooms[a - 1]);
+//                if (instance.getScore() < 0) {
+//                    tui.Screen_DeadInfo();
+//                    a = 0;
+//                }
+//            }
         } while (a != 0);
+//        Scanner sc = new Scanner(System.in);
+//        TUI tui = new TUI();
+//        instance.setPos(room);
+//        Room[] choiceRooms;
+//        int a;
+//        do {
+//            do {
+//                System.out.println("Pontos de jogador atuais: " + instance.getScore());
+//                System.out.println("Aposento atual: " + instance.getPos().getName());
+//                choiceRooms = this.printCommonRooms(instance.getPos());
+//                System.out.println("Escolha um aposento: ");
+//                while (!sc.hasNextInt()) {
+//                    System.out.println("Opção com formato inválido!");
+//                    sc.next();
+//                }
+//                a = sc.nextInt();
+//            } while (a < 0 || a > choiceRooms.length);
+//
+//            if (a != 0 && instance.getScore() > 0) {
+//                long roomPoints = getEdgeWeight(instance.getPos().getName(), choiceRooms[a - 1].getName());
+//                if (roomPoints != 0) {
+//                    instance.setScore(instance.getScore() - (roomPoints * instance.getLevel()));
+//                }
+//                instance.setPos(choiceRooms[a - 1]);
+//                if (instance.getScore() < 0) {
+//                    tui.Screen_DeadInfo();
+//                    a = 0;
+//                }
+//            }
+//        } while (a != 0);
     }
 
     @Override
@@ -288,4 +368,5 @@ public class Map<T> extends DirectedNetwork<T> {
 
         return s;
     }
+
 }

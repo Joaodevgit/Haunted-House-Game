@@ -2,8 +2,6 @@ package HauntedHouse;
 
 import ed.exceptions.ElementNotFoundException;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * @author Francisco Spínola
@@ -11,22 +9,17 @@ import java.util.logging.Logger;
  */
 public class TUI {
 
-    Map<Room> map;
+    public TUI() {
+    }
 
-    public final int EASY = 1;
-    public final int NORMAL = 2;
-    public final int HARD = 3;
-
-    public TUI(Map map, Player player) throws ElementNotFoundException {
-        this.map = new Map<>();
+    public TUI(Map map) throws ElementNotFoundException {
+        Instance instance = new Instance(this, map.getPoints(), map.getEntranceRoom());
         Scanner sc = new Scanner(System.in);
         int o;
-        int dc = getInitialDifficultyChoice();
 
-        player.setName(getPlayerName());
         do {
             do {
-                this.Screen_MainMenu(player.getName(), getDifficulty(dc));
+                this.Screen_MainMenu(instance.getName(), getDifficulty(instance.getLevel()));
                 System.out.println("Introduza opção: ");
                 while (!sc.hasNextInt()) {
                     System.out.println("Opção com formato inválido!");
@@ -37,7 +30,7 @@ public class TUI {
             switch (o) {
                 case 1:
                     this.Screen_NormalGameMode();
-                    map.menuModoNormal(map.getEntranceRoom(), player, dc);
+                    map.menuModoNormal(map.getEntranceRoom(), instance);
                     break;
                 case 2:
                     this.Screen_SimulationGameMode();
@@ -46,9 +39,10 @@ public class TUI {
                     this.Screen_MapRanking();
                     break;
                 case 4:
-                    dc = this.changeDifficultyChoice(dc);// Menu responsável por alterar a dificuldade returnando 
+                    instance.changeDifficultyChoice(this);
                     break;
                 default:
+                    System.out.println("Saiu do jogo!");
                     break;
             }
         } while (o != 0);
@@ -72,7 +66,7 @@ public class TUI {
         System.out.println("|__________________________________________________________________|");
     }
 
-    private void Screen_DifficultyChoice() {
+    protected void Screen_DifficultyChoice() {
         System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                       Dificuldade do jogo                        |");
@@ -81,91 +75,7 @@ public class TUI {
         System.out.println("|         2 -> Normal                                              |");
         System.out.println("|         3 -> Díficil                                             |");
         System.out.println("|                                                                  |");
-        System.out.println("|         0 -> Sair                                                |");
         System.out.println("|__________________________________________________________________|");
-    }
-
-    /**
-     * Método responsável por definir a dificuldade inicial
-     *
-     * @return o valor da dificuldade (1 - Básico , 2 - Normal , 3 - Díficil,0 -
-     * Termina o programa)
-     */
-    private int getInitialDifficultyChoice() {
-        Scanner sc = new Scanner(System.in);
-        int opt;
-        int choice;
-        do {
-            do {
-                Screen_DifficultyChoice();
-                System.out.println("Escolha a dificuldade: ");
-                while (!sc.hasNextInt()) {
-                    System.out.println("Opção de escolha com formato inválido!");
-                    sc.next();
-                }
-                opt = sc.nextInt();
-            } while (opt < 0 || opt > 3);
-            switch (opt) {
-                case 1:
-                    choice = EASY;
-                    System.out.println("Escolheu a dificuldade Básico!");
-                    break;
-                case 2:
-                    choice = NORMAL;
-                    System.out.println("Escolheu a dificuldade Normal!");
-                    break;
-                case 3:
-                    choice = HARD;
-                    System.out.println("Escolheu a dificuldade Difícil!");
-                    break;
-                default:
-                    choice = 0;
-                    System.out.println("Escolheu sair do programa!");
-                    System.exit(0);
-            }
-            return choice;
-        } while (opt != 0);
-    }
-
-    /**
-     * Método responsável por alterar (ou não) a dificuldade inicial
-     *
-     * @return o valor da dificuldade (1 - Básico , 2 - Normal , 3 - Díficil, 0
-     * - Mantém a dificuldade que estava)
-     */
-    private int changeDifficultyChoice(int currentDifficulty) {
-        Scanner sc = new Scanner(System.in);
-        int opt;
-        int choice = currentDifficulty;
-        do {
-            do {
-                Screen_DifficultyChoice();
-                System.out.println("Escolha a dificuldade: ");
-                while (!sc.hasNextInt()) {
-                    System.out.println("Opção de escolha com formato inválido!");
-                    sc.next();
-                }
-                opt = sc.nextInt();
-            } while (opt < 0 || opt > 3);
-            switch (opt) {
-                case 1:
-                    choice = EASY;
-                    System.out.println("Escolheu a dificuldade Básico!");
-                    break;
-                case 2:
-                    choice = NORMAL;
-                    System.out.println("Escolheu a dificuldade Normal!");
-                    break;
-                case 3:
-                    choice = HARD;
-                    System.out.println("Escolheu a dificuldade Difícil!");
-                    break;
-                default:
-                    choice = currentDifficulty;
-                    System.out.println("Escolheu voltar ao menu principal! (Dificuldade mantida)");
-            }
-            return choice;
-        } while (opt != 0);
     }
 
     private String getDifficulty(int difficultyNumber) {
@@ -187,19 +97,12 @@ public class TUI {
         return difficulty;
     }
 
-    private void Screen_PlayerName() {
+    protected void Screen_PlayerName() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
         System.out.println("|                       Nome do jogador                           |");
         System.out.println("|_________________________________________________________________|");
         System.out.println("Nome do jogador: ");
-    }
-
-    private String getPlayerName() {
-        Scanner sc = new Scanner(System.in);
-        Screen_PlayerName();
-        String name = sc.nextLine();
-        return name;
     }
 
     private void Screen_LoadMap() {
@@ -230,21 +133,21 @@ public class TUI {
         System.out.println("|__________________________________________________________________|");
     }
 
-    private void Screen_PlayerInfo() {
+    protected void Screen_PlayerInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
         System.out.println("|                   Informação do jogador                         |");
         System.out.println("|_________________________________________________________________|");
     }
 
-    private void Screen_DeadInfo() {
+    protected void Screen_DeadInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|            Perdeu as vidas todas ! Game Over                     | ");
         System.out.println("|__________________________________________________________________|");
     }
 
-    private void Screen_VictoryInfo() {
+    protected void Screen_VictoryInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                  Parabéns chegou à saída!                        | ");

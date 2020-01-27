@@ -331,16 +331,17 @@ public class GUI implements ActionListener {
         }
     }
 
-    public void writePlayersRankingInfo(String path, OrderedListADT<Player> playersRanking) throws IOException {
+    public void writePlayersRankingInfo(String path, OrderedListADT<Instance> playersRanking,String mapName) throws IOException {
 
         File file = new File(path);
-        Iterator<Player> iter = playersRanking.iterator();
+        Iterator<Instance> iter = playersRanking.iterator();
         int i = 1;
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             while (iter.hasNext()) {
-                writer.write(i + "º " + " - Jogador: " + iter.next().getName() + " - Pontos: " + iter.next().getHighscore()
-                        + " - Mapa: " + iter.next().getMapName());
+                Instance instance = iter.next();
+                writer.write(i + "º " + " - Jogador: " + instance.getName() + " - Pontos: " + instance.getScore()
+                        + " - Mapa: " + mapName);
                 writer.newLine();
                 i++;
             }

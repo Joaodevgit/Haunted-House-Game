@@ -1,8 +1,6 @@
-Jogador: Hacker - Pontos: 20 - Mapa: Maze
-Jogador: Joao - Pontos: 19 - Mapa: Mazev2
-Jogador: Joao1 - Pontos: 18 - Mapa: Mazev2
-Jogador: Joao2 - Pontos: 17 - Mapa: Mazev2
-Jogador: Joao3 - Pontos: 16 - Mapa: Mazev2
-Jogador: Joao4 - Pontos: 15 - Mapa: Mazev2
-Jogador: Joao5 - Pontos: 14 - Mapa: Mazev2
-
+1º  - Jogador: Rato - Pontos: 15 - Mapa: sexta-feira 13
+2º  - Jogador: Instance - Pontos: 12 - Mapa: sexta-feira 13
+3º  - Jogador: Qwerty - Pontos: 10 - Mapa: sexta-feira 13
+4º  - Jogador: Joao - Pontos: 10 - Mapa: sexta-feira 13
+5º  - Jogador: Spino - Pontos: 9 - Mapa: sexta-feira 13
+6º  - Jogador: Hacker - Pontos: 2 - Mapa: sexta-feira 13
