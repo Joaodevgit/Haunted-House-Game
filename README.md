@@ -128,3 +128,24 @@ O que fazer para o próximo commit:
 - Corrigir o iterador da lista ordenada
 - Após a correção do iterador trocar os "tradicionais" arrays por listas não ordenadas
 - Ver como temos que fazer com que o jogador chegue ao exterior
+
+--------------------------------------------------------------------------------------------------------
+
+28/01/2020 02:36 Francisco Spínola: "Modo Normal"
+
+O que foi feito neste commit:
+
+- Correção na alteração da dificuldade (não era realmente alterada, nem internamente nem graficamente).
+- Listagem dos melhores classificados.
+- Modo normal totalmente implementado.
+- Adição de restrições para o nome do jogador.
+- Implementação visual da vitória e derrota do jogador (TUI).
+- Escolher guardar o resultado do jogo em ranking.txt, caso este seja melhor que algum dos que lá constam (método highscore da classe Instance).
+- Alteração na classe Ficheiros do uso de ArrayUnorderedList para LinkedOrderedList, uso posterior no metodo highscore na classe Instance.
+
+O que fazer para o próximo commit:
+
+- Corrigir método de guardar resultado do jogo em ranking.txt (método writePlayersRankingInfo da classe Ficheiros).
+- Criar modo simulação
+- Documentar resto do código
+- Acabar interface gráfica

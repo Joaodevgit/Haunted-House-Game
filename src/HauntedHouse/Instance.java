@@ -1,10 +1,17 @@
 package HauntedHouse;
 
+import ed.adt.OrderedListADT;
+import ed.exceptions.EmptyCollectionException;
+import ed.exceptions.NonComparableException;
+import ed.util.ArrayOrderedList;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
  *
  * @author João Pereira
+ * @author Francisco Spínola
  */
 public class Instance implements Comparable<Instance> {
 
@@ -19,7 +26,7 @@ public class Instance implements Comparable<Instance> {
     
     public Instance(TUI tui, long score, Room pos) {
         this.name = this.getPlayerName(tui);
-        this.level = this.changeDifficultyChoice(tui);
+        this.changeDifficultyChoice(tui);
         this.score = score;
         this.pos = pos;
     }
@@ -40,10 +47,6 @@ public class Instance implements Comparable<Instance> {
         return level;
     }
 
-    public void setLevel(short level) {
-        this.level = level;
-    }
-    
     public Room getPos() {
         return pos;
     }
@@ -56,6 +59,10 @@ public class Instance implements Comparable<Instance> {
         Scanner sc = new Scanner(System.in);
         tui.Screen_PlayerName();
         String name = sc.nextLine();
+        if (!name.matches("^[a-zA-Z0-9 ]+$")) {
+            System.out.println("Nome inserido inválido. A sair...");
+            System.exit(0);
+        }
         return name;
     }
 
@@ -63,12 +70,10 @@ public class Instance implements Comparable<Instance> {
      * Método responsável por definir a dificuldade inicial
      *
      * @param tui
-     * @return o valor da dificuldade (1 - Básico , 2 - Normal , 3 - Díficil)
      */
-    protected short changeDifficultyChoice(TUI tui) {
+    protected void changeDifficultyChoice(TUI tui) {
         Scanner sc = new Scanner(System.in);
         int opt;
-        short choice;
         do {
             tui.Screen_DifficultyChoice();
             System.out.println("Escolha a dificuldade: ");
@@ -80,21 +85,46 @@ public class Instance implements Comparable<Instance> {
         } while (opt < 1 || opt > 3);
         switch (opt) {
             case 1:
-                choice = EASY;
+                this.level = EASY;
                 System.out.println("Escolheu a dificuldade Básico!");
                 break;
             case 2:
-                choice = NORMAL;
+                this.level = NORMAL;
                 System.out.println("Escolheu a dificuldade Normal!");
                 break;
             case 3:
-                choice = HARD;
+                this.level = HARD;
                 System.out.println("Escolheu a dificuldade Difícil!");
                 break;
             default:
-                choice = NORMAL;
+                this.level = NORMAL;
         }
-        return choice;
+    }
+    
+    protected void reset(Room entrance, long points) {
+        this.pos = entrance;
+        this.score = points;
+    }
+    
+    protected void highscore(String mapName) throws FileNotFoundException, EmptyCollectionException, 
+            NonComparableException, IOException {
+        OrderedListADT<String> list = new Ficheiros().loadPlayersRankingInfo();
+        if (!list.isEmpty() || list.size() < 10) {
+            int index = 18;
+            String lastScore = "";
+            while (index < list.last().length() && (list.last().charAt(index) < 48 || list.last().charAt(index) > 57)) index++;
+            while (list.last().charAt(index) >= 48 && list.last().charAt(index) <= 57) {
+                lastScore += list.last().charAt(index);
+                index++;
+            }
+            if (this.score > Integer.parseInt(lastScore)) {
+                new Ficheiros().writePlayersRankingInfo(this, mapName);
+            }
+        } else {
+            OrderedListADT ordered = new ArrayOrderedList();
+            ordered.add(this);
+            new Ficheiros().writePlayersRankingInfo(this, mapName);
+        }
     }
 
     @Override
