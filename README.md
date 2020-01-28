@@ -108,7 +108,7 @@ O que falta fazer:
 
 --------------------------------------------------------------------------------------------------------
 
-25/01/2020  João Pereira Commit:""
+28/01/2020 23:00 João Pereira Commit:"Alteração da estrutura do programa e criacao da classe Instance"
 
 O que foi feito neste commit:
 
