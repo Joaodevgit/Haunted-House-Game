@@ -1,11 +1,12 @@
 package Demo;
 
-import Exceptions.InvalidTypeException;
-import HauntedHouse.*;
-import ed.adt.OrderedListADT;
+import HauntedHouse.Map;
+import HauntedHouse.Room;
+import HauntedHouse.TUI;
+import HauntedHouse.GUI;
 import ed.exceptions.ElementNotFoundException;
+import ed.exceptions.EmptyCollectionException;
 import ed.exceptions.NonComparableException;
-import ed.util.ArrayOrderedList;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -19,23 +20,14 @@ import org.json.simple.parser.ParseException;
  */
 public class Main {
 
-    public static void main(String[] args) throws IOException {
-
+    public static void main(String[] args) {
         try {
-            Room room = new Room("hall");
             Map<Room> map = new Map<>();
-            //map.printCommonRooms(room);
-            //new TUI(map);
-            
-            //Instance instance = new Instance(tui, map.getPoints(), map.getEntranceRoom());
-
-            //map.getPoints();
-//            System.out.println(map.toString());
-            //Room[] rooms = map.getRoomEdges("hall");
-            //map.printCommonRooms(room);
-            //System.out.println(map.getEdgeWeight("hall", "cozinha"));
-//            new GUI(map);
-        } catch (FileNotFoundException | ElementNotFoundException | ParseException ex) {
+            new TUI(map);
+            //new GUI(map);
+        } catch (FileNotFoundException | ElementNotFoundException | ParseException | EmptyCollectionException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NonComparableException | IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

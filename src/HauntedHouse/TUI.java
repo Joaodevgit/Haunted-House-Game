@@ -1,6 +1,12 @@
 package HauntedHouse;
 
+import ed.adt.OrderedListADT;
 import ed.exceptions.ElementNotFoundException;
+import ed.exceptions.EmptyCollectionException;
+import ed.exceptions.NonComparableException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.Scanner;
 
 /**
@@ -12,7 +18,8 @@ public class TUI {
     public TUI() {
     }
 
-    public TUI(Map map) throws ElementNotFoundException {
+    public TUI(Map map) throws ElementNotFoundException, FileNotFoundException, 
+            EmptyCollectionException, NonComparableException, IOException {
         Instance instance = new Instance(this, map.getPoints(), map.getEntranceRoom());
         Scanner sc = new Scanner(System.in);
         int o;
@@ -30,10 +37,17 @@ public class TUI {
             switch (o) {
                 case 1:
                     this.Screen_NormalGameMode();
-                    map.menuModoNormal(map.getEntranceRoom(), instance);
+                    short result = map.menuModoNormal(instance);
+                    if (result == 0)
+                        this.Screen_DeadInfo();
+                    else if (result == 1)
+                        this.Screen_VictoryInfo(instance);
+                    instance.highscore(map.getName());
+                    instance.reset(map.getEntranceRoom(), map.getPoints());
                     break;
                 case 2:
                     this.Screen_SimulationGameMode();
+                    instance.reset(map.getEntranceRoom(), map.getPoints());
                     break;
                 case 3:
                     this.Screen_MapRanking();
@@ -42,7 +56,7 @@ public class TUI {
                     instance.changeDifficultyChoice(this);
                     break;
                 default:
-                    System.out.println("Saiu do jogo!");
+                    System.out.println("Ohhhh! Adeus... :(");
                     break;
             }
         } while (o != 0);
@@ -126,11 +140,17 @@ public class TUI {
         System.out.println("|_________________________________________________________________|");
     }
 
-    private void Screen_MapRanking() {
+    private void Screen_MapRanking() throws FileNotFoundException, IOException, NonComparableException {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
-        System.out.println("|       Classficação do mapa (Por pontos de vida restantes)        | ");
+        System.out.println("|                       Classficação do mapa                       |");
         System.out.println("|__________________________________________________________________|");
+        OrderedListADT rankings = new Ficheiros().loadPlayersRankingInfo();
+        Iterator<String> iter = rankings.iterator();
+        while (iter.hasNext()) {
+            System.out.println(iter.next());
+        }
+        pressEnter();
     }
 
     protected void Screen_PlayerInfo() {
@@ -143,14 +163,22 @@ public class TUI {
     protected void Screen_DeadInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
-        System.out.println("|            Perdeu as vidas todas ! Game Over                     | ");
+        System.out.println("|            Perdeu as vidas todas! Game Over                     | ");
         System.out.println("|__________________________________________________________________|");
+        pressEnter();
     }
 
-    protected void Screen_VictoryInfo() {
+    protected void Screen_VictoryInfo(Instance instance) {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                  Parabéns chegou à saída!                        | ");
         System.out.println("|__________________________________________________________________|");
+        System.out.println("Pontos: " + instance.getScore());
+        pressEnter();
+    }
+    
+    private void pressEnter() {
+        System.out.println("\nPressione Enter para continuar...");
+        new Scanner(System.in).nextLine();
     }
 }

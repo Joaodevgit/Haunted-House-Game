@@ -1,9 +1,6 @@
 package HauntedHouse;
 
-import Exceptions.InvalidTypeException;
-import ed.adt.UnorderedListADT;
 import ed.exceptions.ElementNotFoundException;
-import ed.util.ArraySearch;
 import ed.util.ArrayUnorderedList;
 import ed.util.matrixGraph.DirectedNetwork;
 import java.io.FileNotFoundException;
@@ -229,7 +226,7 @@ public class Map<T> extends DirectedNetwork<T> {
         ArrayUnorderedList<Room> rooms = getRoomEdges(room.getName());
         Iterator<Room> iter = rooms.iterator();
         int i = 0;
-        System.out.println("Escolha um aposento: ");
+        System.out.println("Opções: ");
         while (iter.hasNext()) {
             Room roomIter = iter.next();
             System.out.println((i + 1) + " - " + roomIter.getName());
@@ -239,19 +236,10 @@ public class Map<T> extends DirectedNetwork<T> {
             System.out.println((rooms.size() + 1) + " - Exterior");
         }
         return rooms;
-//        Room[] rooms = getRoomEdges(room.getName());
-//        System.out.println("Escolha um aposento: ");
-//        for (int i = 0; i < rooms.length; i++) {
-//            System.out.println((i + 1) + " - " + rooms[i].getName());
-//        }
-//        if (room.getType() == -1) {
-//            System.out.println((rooms.length + 1) + " - Exterior");
-//        }
-//        return rooms;
     }
 
     /**
-     * Método responsável por retornar o aposento em comun escolhido pelo
+     * Método responsável por retornar o aposento em comum escolhido pelo
      * utilizador
      *
      * @param room aposento a ser procurado na lista não ordenada
@@ -261,7 +249,7 @@ public class Map<T> extends DirectedNetwork<T> {
      * @throws ArrayIndexOutOfBoundsException caso o nº de option esteja fora do
      * intervalo
      */
-    public String findCommonRoom(Room room, int option) throws ElementNotFoundException, ArrayIndexOutOfBoundsException {
+    public Room findCommonRoom(Room room, int option) throws ElementNotFoundException, ArrayIndexOutOfBoundsException {
 
         ArrayUnorderedList<Room> commonRooms = getRoomEdges(room.getName());
         if (option < 0 || option > commonRooms.size() - 1) {
@@ -273,7 +261,7 @@ public class Map<T> extends DirectedNetwork<T> {
             i++;
             iter.next();
         }
-        return iter.next().getName();
+        return iter.next();
     }
 
     /**
@@ -281,12 +269,11 @@ public class Map<T> extends DirectedNetwork<T> {
      * @param room aposento que irá servir como um ponto de partida
      * @param instance 
      * @throws ElementNotFoundException caso o aposento não seja encontrado
+     * @return -1 if the player choosed to exit early in the game, 0 if the player lost the game and 1 if he won.
      */
-    public void menuModoNormal(Room room, Instance instance) throws ElementNotFoundException {
+    public short menuModoNormal(Instance instance) throws ElementNotFoundException {
         Scanner sc = new Scanner(System.in);
         ArrayUnorderedList<Room> choiceRooms;
-        instance.setPos(room);
-        TUI tui = new TUI();
         int a;
         do {
             do {
@@ -301,49 +288,29 @@ public class Map<T> extends DirectedNetwork<T> {
                 a = sc.nextInt();
             } while (a < 0 || a > choiceRooms.size());
 
-//            if (instance.getScore() > 0 &&) {
-//
-//                long roomPoints = getEdgeWeight(instance.getPos().getName(), choiceRooms[a - 1].getName());
-//                if (roomPoints != 0) {
-//                    instance.setScore(instance.getScore() - (roomPoints * instance.getLevel()));
-//                }
-//                instance.setPos(choiceRooms[a - 1]);
-//                if (instance.getScore() < 0) {
-//                    tui.Screen_DeadInfo();
-//                    a = 0;
-//                }
-//            }
-        } while (a != 0);
-//        Scanner sc = new Scanner(System.in);
-//        TUI tui = new TUI();
-//        instance.setPos(room);
-//        Room[] choiceRooms;
-//        int a;
-//        do {
-//            do {
-//                System.out.println("Pontos de jogador atuais: " + instance.getScore());
-//                System.out.println("Aposento atual: " + instance.getPos().getName());
-//                choiceRooms = this.printCommonRooms(instance.getPos());
-//                System.out.println("Escolha um aposento: ");
-//                while (!sc.hasNextInt()) {
-//                    System.out.println("Opção com formato inválido!");
-//                    sc.next();
-//                }
-//                a = sc.nextInt();
-//            } while (a < 0 || a > choiceRooms.length);
-//
-//            if (a != 0 && instance.getScore() > 0) {
-//                long roomPoints = getEdgeWeight(instance.getPos().getName(), choiceRooms[a - 1].getName());
-//                if (roomPoints != 0) {
-//                    instance.setScore(instance.getScore() - (roomPoints * instance.getLevel()));
-//                }
-//                instance.setPos(choiceRooms[a - 1]);
-//                if (instance.getScore() < 0) {
-//                    tui.Screen_DeadInfo();
-//                    a = 0;
-//                }
-//            }
-//        } while (a != 0);
+            Room dstRoom = findCommonRoom(instance.getPos(), a - 1);
+            long roomPoints = getEdgeWeight(instance.getPos().getName(), dstRoom.getName());
+            
+            //If the room contains a ghost
+            if (roomPoints != 0) {
+                System.out.println("Ups... Encontras-te um fantasma. Perdes-te " + (roomPoints * instance.getLevel()) + " pontos.");
+                instance.setScore(instance.getScore() - (roomPoints * instance.getLevel()));
+            }
+            
+            instance.setPos(dstRoom);
+        } while (a != 0 && instance.getPos().getType() != -1 && instance.getScore() > 0);
+        
+        //Player choosed to quit
+        if (a == 0)
+            return -1;
+        
+        //Player found the exit (game won)
+        else if (instance.getPos().getType() == -1)
+            return 1;
+        
+        //Player has no life points remaining (game lost)
+        else
+            return 0;
     }
 
     @Override
@@ -368,5 +335,4 @@ public class Map<T> extends DirectedNetwork<T> {
 
         return s;
     }
-
 }
