@@ -1,6 +1,7 @@
 package HauntedHouse;
 
 import ed.adt.OrderedListADT;
+import ed.adt.UnorderedListADT;
 import ed.exceptions.EmptyCollectionException;
 import ed.exceptions.NonComparableException;
 import ed.util.ArrayOrderedList;
@@ -13,7 +14,7 @@ import java.util.Scanner;
  * @author João Pereira
  * @author Francisco Spínola
  */
-public class Instance implements Comparable<Instance> {
+public class InstanceTUI implements Comparable<InstanceTUI> {
 
     public final int EASY = 1;
     public final int NORMAL = 2;
@@ -24,7 +25,7 @@ public class Instance implements Comparable<Instance> {
     private short level;
     private Room pos;
     
-    public Instance(TUI tui, long score, Room pos) {
+    public InstanceTUI(TUI tui, long score, Room pos) {
         this.name = this.getPlayerName(tui);
         this.changeDifficultyChoice(tui);
         this.score = score;
@@ -108,27 +109,20 @@ public class Instance implements Comparable<Instance> {
     
     protected void highscore(String mapName) throws FileNotFoundException, EmptyCollectionException, 
             NonComparableException, IOException {
-        OrderedListADT<String> list = new Ficheiros().loadPlayersRankingInfo();
-        if (!list.isEmpty() || list.size() < 10) {
-            int index = 18;
-            String lastScore = "";
-            while (index < list.last().length() && (list.last().charAt(index) < 48 || list.last().charAt(index) > 57)) index++;
-            while (list.last().charAt(index) >= 48 && list.last().charAt(index) <= 57) {
-                lastScore += list.last().charAt(index);
-                index++;
-            }
-            if (this.score > Integer.parseInt(lastScore)) {
+        UnorderedListADT<String> list = new Ficheiros().loadPlayersRankingInfo();
+        if (list.size() == 10) {
+            //Verify if the points from the last line of rankings.txt are greater than this instance points.
+            int[] scores = new Ficheiros().points();
+            if (this.score > scores[scores.length-1]) {
                 new Ficheiros().writePlayersRankingInfo(this, mapName);
             }
         } else {
-            OrderedListADT ordered = new ArrayOrderedList();
-            ordered.add(this);
             new Ficheiros().writePlayersRankingInfo(this, mapName);
         }
     }
 
     @Override
-    public int compareTo(Instance o) {
+    public int compareTo(InstanceTUI o) {
         if (this.score < o.score) {
             return 1;
         } else if (this.score == o.score) {

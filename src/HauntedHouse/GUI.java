@@ -1,6 +1,5 @@
 package HauntedHouse;
 
-import ed.adt.OrderedListADT;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -12,14 +11,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -83,9 +76,9 @@ public class GUI implements ActionListener {
      */
     public GUI(Map map) throws IOException {
         this.sound = true;
-        this.easy = new JButton(new ImageIcon(ImageIO.read(new File("lib/easy.png"))));
-        this.normal = new JButton(new ImageIcon(ImageIO.read(new File("lib/normal2.png"))));
-        this.hard = new JButton(new ImageIcon(ImageIO.read(new File("lib/hard.png"))));
+        this.easy = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/easy.png"))));
+        this.normal = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/normal2.png"))));
+        this.hard = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/hard.png"))));
         this.map = map;
         this.status = 0;
         this.levelChanger();
@@ -164,7 +157,7 @@ public class GUI implements ActionListener {
         JPanel panel2 = new JPanel();
         JPanel main = new JPanel();
         this.playerName = new JTextField(21);
-        this.ok = new JButton(new ImageIcon(ImageIO.read(new File("lib/submit.png"))));
+        this.ok = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/submit.png"))));
         this.ok.setBorderPainted(false);
         this.ok.setContentAreaFilled(false);
         this.ok.setMargin(new Insets(0, 0, 0, 0));
@@ -202,12 +195,12 @@ public class GUI implements ActionListener {
     private void mainMenu() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         //Creating the frame
         this.menu = new JFrame("Casa Assombrada");
-        this.close = new JButton(new ImageIcon(ImageIO.read(new File("lib/close.png"))));
-        this.highscore = new JButton(new ImageIcon(ImageIO.read(new File("lib/highscore.png"))));
-        this.levelChange = new JButton(new ImageIcon(ImageIO.read(new File("lib/level.png"))));
-        this.normalMode = new JButton(new ImageIcon(ImageIO.read(new File("lib/normal.png"))));
-        this.simulationMode = new JButton(new ImageIcon(ImageIO.read(new File("lib/simulation.png"))));
-        this.soundB = new JButton(new ImageIcon(ImageIO.read(new File("lib/sound.png"))));
+        this.close = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/close.png"))));
+        this.highscore = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/highscore.png"))));
+        this.levelChange = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/level.png"))));
+        this.normalMode = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/normal.png"))));
+        this.simulationMode = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/simulation.png"))));
+        this.soundB = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/sound.png"))));
 
         //Adding content to the frame
         this.menu.add(new BackgroundPane());
@@ -224,7 +217,7 @@ public class GUI implements ActionListener {
         this.menu.setVisible(true);
 
         this.clip = AudioSystem.getClip();
-        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/Fable-Lychfield-Cemetary.wav"));
+        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/sounds/Fable-Lychfield-Cemetary.wav"));
         this.clip.open(inputStream);
         if (this.sound) {
             this.clip.start();
@@ -250,7 +243,7 @@ public class GUI implements ActionListener {
         public BackgroundPane() throws IOException {
             setLayout(new BorderLayout());
             JLabel label = new JLabel(new ImageIcon(
-                    ImageIO.read(new File("lib/background.jpg")).getScaledInstance(GraphicsEnvironment.
+                    ImageIO.read(new File("lib/images/background.jpg")).getScaledInstance(GraphicsEnvironment.
                             getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth(),
                             GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
                                     getDisplayMode().getHeight(), Image.SCALE_DEFAULT)));
@@ -295,7 +288,7 @@ public class GUI implements ActionListener {
      */
     private void simulation() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.clip = AudioSystem.getClip();
-        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/gamemusic.wav"));
+        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/sounds/gamemusic.wav"));
         this.clip.open(inputStream);
         if (this.sound) {
             this.clip.start();
@@ -307,83 +300,11 @@ public class GUI implements ActionListener {
      */
     private void normal() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
         this.clip = AudioSystem.getClip();
-        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/gamemusic.wav"));
+        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/sounds/gamemusic.wav"));
         this.clip.open(inputStream);
         if (this.sound) {
             this.clip.start();
         }
-    }
-
-    /**
-     * Mostra as classificações do jogo.
-     */
-    private void highscore() {
-        try {
-            String[] rankingArray = loadRankingFile();
-            String rankList = "";
-            for (int j = 0; j < rankingArray.length; j++) {
-                String playerInfo = rankingArray[j];
-                rankList += playerInfo + "\n";
-            }
-            JOptionPane.showMessageDialog(null, rankList, "Classificação TOP10", JOptionPane.INFORMATION_MESSAGE);
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void writePlayersRankingInfo(String path, OrderedListADT<Instance> playersRanking,String mapName) throws IOException {
-
-        File file = new File(path);
-        Iterator<Instance> iter = playersRanking.iterator();
-        int i = 1;
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            while (iter.hasNext()) {
-                Instance instance = iter.next();
-                writer.write(i + "º " + " - Jogador: " + instance.getName() + " - Pontos: " + instance.getScore()
-                        + " - Mapa: " + mapName);
-                writer.newLine();
-                i++;
-            }
-            writer.flush();
-            writer.close();
-        }
-    }
-
-    public String[] loadRankingFile() throws FileNotFoundException {
-        File file = new File("ranking.txt");
-        String rankingArray[];
-        if (lineRankingFileCounter() < 10) {
-            rankingArray = new String[lineRankingFileCounter()];
-        } else {
-            rankingArray = new String[10];
-        }
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        int i = 0;
-        String st;
-        try {
-            while ((st = br.readLine()) != null) {
-                rankingArray[i] = st;
-                i++;
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Ficheiros.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return rankingArray;
-    }
-
-    public int lineRankingFileCounter() throws FileNotFoundException {
-        File file = new File("ranking.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        int i = 0;
-        try {
-            while (br.readLine() != null) {
-                i++;
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(Ficheiros.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return i;
     }
 
     /**
@@ -454,7 +375,7 @@ public class GUI implements ActionListener {
         } else if (ev.getSource().equals(this.levelChange)) {
             this.levelChanger();
         } else if (ev.getSource().equals(this.highscore)) {
-            this.highscore();
+            //this.highscore();
         } else if (ev.getSource().equals(this.normalMode)) {
             this.clip.stop();
             try {

@@ -146,6 +146,28 @@ O que foi feito neste commit:
 O que fazer para o próximo commit:
 
 - Corrigir método de guardar resultado do jogo em ranking.txt (método writePlayersRankingInfo da classe Ficheiros).
+- Acabar classe Network.
 - Criar modo simulação
+- Documentar resto do código
+- Acabar interface gráfica
+
+--------------------------------------------------------------------------------------------------------
+
+28/01/2020 11:00 Francisco Spínola: "Update"
+
+O que foi feito neste commit:
+
+- Alterado os métodos já existentes dentro da classe Ficheiros
+- Adicionado os métodos reset em Instance, numLines e points em Ficheiros.
+- Alterada a estrutura do projeto, onde os sons para lib/sounds e imagens para lib/images
+- Corrigido o método highscore na classe Instance.
+- Apagados os métodos repetidos que constavam em GUI (como os métodos que estão em Ficheiros).
+- Alterada a organização de rankings.txt, já não é mostrado as posições (1º, 2º,...).
+
+O que fazer para o próximo commit:
+
+- !URGENTE! Corrigir/Acabar método de guardar resultado do jogo em ranking.txt (método writePlayersRankingInfo da classe Ficheiros). Só funciona quando não existe nada escrito em rankings.txt.
+- Acabar classe Network.
+- Criar modo simulação.
 - Documentar resto do código
 - Acabar interface gráfica

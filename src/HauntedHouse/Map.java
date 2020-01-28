@@ -271,7 +271,7 @@ public class Map<T> extends DirectedNetwork<T> {
      * @throws ElementNotFoundException caso o aposento não seja encontrado
      * @return -1 if the player choosed to exit early in the game, 0 if the player lost the game and 1 if he won.
      */
-    public short menuModoNormal(Instance instance) throws ElementNotFoundException {
+    public short menuModoNormal(InstanceTUI instance) throws ElementNotFoundException {
         Scanner sc = new Scanner(System.in);
         ArrayUnorderedList<Room> choiceRooms;
         int a;

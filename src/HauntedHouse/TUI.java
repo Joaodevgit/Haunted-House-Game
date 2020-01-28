@@ -1,6 +1,6 @@
 package HauntedHouse;
 
-import ed.adt.OrderedListADT;
+import ed.adt.UnorderedListADT;
 import ed.exceptions.ElementNotFoundException;
 import ed.exceptions.EmptyCollectionException;
 import ed.exceptions.NonComparableException;
@@ -14,13 +14,9 @@ import java.util.Scanner;
  * @author João Pereira
  */
 public class TUI {
-
-    public TUI() {
-    }
-
     public TUI(Map map) throws ElementNotFoundException, FileNotFoundException, 
             EmptyCollectionException, NonComparableException, IOException {
-        Instance instance = new Instance(this, map.getPoints(), map.getEntranceRoom());
+        InstanceTUI instance = new InstanceTUI(this, map.getPoints(), map.getEntranceRoom());
         Scanner sc = new Scanner(System.in);
         int o;
 
@@ -145,7 +141,7 @@ public class TUI {
         System.out.println("|                                                                  |");
         System.out.println("|                       Classficação do mapa                       |");
         System.out.println("|__________________________________________________________________|");
-        OrderedListADT rankings = new Ficheiros().loadPlayersRankingInfo();
+        UnorderedListADT rankings = new Ficheiros().loadPlayersRankingInfo();
         Iterator<String> iter = rankings.iterator();
         while (iter.hasNext()) {
             System.out.println(iter.next());
@@ -168,7 +164,7 @@ public class TUI {
         pressEnter();
     }
 
-    protected void Screen_VictoryInfo(Instance instance) {
+    protected void Screen_VictoryInfo(InstanceTUI instance) {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                  Parabéns chegou à saída!                        | ");
