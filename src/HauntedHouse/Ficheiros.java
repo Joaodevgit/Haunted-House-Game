@@ -1,9 +1,9 @@
 package HauntedHouse;
 
-import ed.adt.UnorderedListADT;
+import ed.adt.OrderedListADT;
 import ed.exceptions.EmptyCollectionException;
 import ed.exceptions.NonComparableException;
-import ed.util.ArrayUnorderedList;
+import ed.util.ArrayOrderedList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -11,6 +11,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Iterator;
 
 /**
  *
@@ -18,69 +19,174 @@ import java.io.IOException;
  * @author Francisco Spínola
  */
 public class Ficheiros {
-    public void writePlayersRankingInfo(InstanceTUI instance, String mapName) throws IOException, 
-            EmptyCollectionException, FileNotFoundException, NonComparableException {
-        File file = new File("lib/rankings.txt");
-        FileWriter fw = new FileWriter(file, false);
-        BufferedWriter writer = new BufferedWriter(fw);
-        UnorderedListADT load = this.loadPlayersRankingInfo();
-        
-        int lines = numLines();
-        int[] scores = points();
-        
-        if (lines < 10 && lines > 0) {
-            int i = 0;
-            while (i < scores.length && scores[i] > instance.getScore()) i++;
-            //append to rankings.txt
-        } else if (lines == 0) {
-            writer.write("Jogador: " + instance.getName() + " - Pontos: " + instance.getScore()
-                    + " - Mapa: " + mapName);
-            writer.newLine();
-        } else /*lines == 10*/ {
-            //append to rankings.txt
-            writer.newLine();
-            //delete last line of rankings.txt
+
+    /**
+     * Método responsável por escrever todas as informações necessárias (nome e
+     * pontuação do jogador, o nome do mapa e a dificuldadeem que este jogou
+     *
+     * @param file ficheiro a ser escrito
+     * @param list lista ordenada que irá conter a classificação atual de cada
+     * dificuldade
+     * @param mapName nome do mapa
+     * @param level dificuldade do mapa
+     * @throws IOException
+     */
+    private void writeToFile(File file, OrderedListADT<InstanceTUI> list, String mapName, short level) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            switch (level) {
+                case 1:
+                    writer.write("-----------Nível Básico-----------");
+                    writer.newLine();
+                    break;
+                case 2:
+                    writer.write("-----------Nível Normal-----------");
+                    writer.newLine();
+                    break;
+                case 3:
+                    writer.write("-----------Nível Díficil-----------");
+                    writer.newLine();
+                    break;
+                default:
+            }
+            Iterator<InstanceTUI> iter = list.iterator();
+            while (iter.hasNext()) {
+                InstanceTUI instancia = iter.next();
+                writer.write("Jogador:" + instancia.getName() + "|Pontos:" + instancia.getScore()
+                        + "|Mapa:" + mapName);
+                writer.newLine();
+            }
+            writer.flush();
+            writer.close();
         }
-        writer.close();
     }
 
-    public UnorderedListADT<String> loadPlayersRankingInfo() throws FileNotFoundException, IOException, NonComparableException {
-        File file = new File("lib/rankings.txt");
-        UnorderedListADT<String> rankingList = new ArrayUnorderedList<>();
+    /*
+    Estou a repetir código ver aqui
+     */
+    /**
+     * Método responsável por escrever os dados de um jogador para o ficheiro
+     *
+     * @param instance
+     * @param mapName nome do mapa
+     * @throws IOException caso exista algum erro na escrita para ficheiro
+     * @throws EmptyCollectionException caso a lista esteja vazia
+     * @throws FileNotFoundException caso o ficheiro não tenha sido encontrado
+     * @throws NonComparableException caso o elemento a ser comparado , não seja
+     * comparável
+     */
+    public void writePlayerRankingInfo(InstanceTUI instance, String mapName) throws IOException,
+            EmptyCollectionException, FileNotFoundException, NonComparableException {
+        File file;
+        OrderedListADT<InstanceTUI> currentRankingList = this.loadByDifficulty(instance.getLevel());
+        switch (instance.getLevel()) {
+            case 1:
+                file = new File("lib/BasicRankings.txt");
+                if (currentRankingList.isEmpty()) {
+                    currentRankingList.add(instance);
+                    writeToFile(file, currentRankingList, mapName, instance.getLevel());
+                } else {
+                    if (!currentRankingList.contains(instance)) {
+                        currentRankingList.add(instance);
+                        writeToFile(file, currentRankingList, mapName, instance.getLevel());
+                    }
+                }
+                break;
+            case 2:
+                file = new File("lib/NormalRankings.txt");
+                if (currentRankingList.isEmpty()) {
+                    currentRankingList.add(instance);
+                    writeToFile(file, currentRankingList, mapName, instance.getLevel());
+                } else {
+                    if (!currentRankingList.contains(instance)) {
+                        currentRankingList.add(instance);
+                        writeToFile(file, currentRankingList, mapName, instance.getLevel());
+                    }
+                }
+                break;
+            case 3:
+                file = new File("lib/HardRankings.txt");
+                if (currentRankingList.isEmpty()) {
+                    currentRankingList.add(instance);
+                    writeToFile(file, currentRankingList, mapName, instance.getLevel());
+                } else {
+                    if (!currentRankingList.contains(instance)) {
+                        currentRankingList.add(instance);
+                        writeToFile(file, currentRankingList, mapName, instance.getLevel());
+                    }
+                }
+                break;
+            default:
+        }
+    }
+
+    /**
+     * Método responsável por carregar o ficheiro de classificação dos jogadores
+     *
+     * @param path caminho do ficheiro a ser carregado
+     * @return o uma lista com o conteúdo que foi carregado
+     *
+     * @throws FileNotFoundException caso o ficheiro não tenha sido encontrado
+     * @throws NonComparableException caso o elemento a ser comparado , não seja
+     * possível compará-lo
+     * @throws IOException caso exista algum erro na escrita para ficheiro
+     */
+    private OrderedListADT<InstanceTUI> loadPlayersRankingInfo(String path) throws FileNotFoundException, NonComparableException, IOException {
+
+        File file = new File(path);
+        OrderedListADT<InstanceTUI> newRank = new ArrayOrderedList<>();
         BufferedReader br = new BufferedReader(new FileReader(file));
         int i = 0;
         String st;
         while ((st = br.readLine()) != null) {
-            rankingList.addToRear(st);
-            i++;
-        }
-        return rankingList;
-    }
-    
-    private int numLines() throws IOException {
-        File file = new File("lib/rankings.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        int i = 0;
-        String st;
-        while ((st = br.readLine()) != null) i++;
-        return i;
-    }
-    
-    protected int[] points() throws EmptyCollectionException, IOException, FileNotFoundException, NonComparableException {
-        int resultList[] = new int[numLines()];
-        UnorderedListADT<String> list = this.loadPlayersRankingInfo();
-        int i = 0;
-        while (i < list.size()) {
-            String[] scores = list.last().split("Pontos:");
-            int index = 0;
-            String score = "";
-            while (index < scores[1].length() && (scores[1].charAt(index) < 48 || scores[1].charAt(index) > 57)) index++;
-            while (scores[1].charAt(index) >= 48 && scores[1].charAt(index) <= 57) {
-                score += list.last().charAt(index);
-                index++;
+            if (st.contains("Jogador:") && st.contains("|Pontos:") && st.contains("|Mapa:")) {
+                String playerName;
+                Long playerScore;
+                String tempCharCount;
+                String mapName;
+
+                playerName = st.substring(8, st.indexOf("|P"));
+                tempCharCount = st.substring(16 + playerName.length(), st.indexOf("|M"));
+                playerScore = Long.parseLong(tempCharCount);
+                mapName = st.substring(22 + playerName.length() + tempCharCount.length(), st.length() - 1);
+
+                InstanceTUI testInstance = new InstanceTUI(playerName, playerScore, mapName);
+                newRank.add(testInstance);
+                i++;
             }
-            resultList[i] = Integer.parseInt(score);
         }
-        return resultList;
+        return newRank;
     }
+
+    /**
+     * Método responsável por carregar um ficheiro de classificação consoante a
+     * dificuldade que se quer usar
+     *
+     * @param level nível do jogo
+     * @return lista ordenada da classificação do nível correspondente
+     * @throws FileNotFoundException caso o ficheiro não tenha sido encontrado
+     * @throws IOException caso exista algum erro na escrita para ficheiro
+     * @throws NonComparableException caso o elemento a ser comparado , não seja
+     * possível compará-lo
+     */
+    public OrderedListADT<InstanceTUI> loadByDifficulty(short level) throws FileNotFoundException,
+            IOException, NonComparableException {
+
+        OrderedListADT<InstanceTUI> rank = new ArrayOrderedList<>();
+
+        switch (level) {
+            case 1:
+                rank = Ficheiros.this.loadPlayersRankingInfo("lib/BasicRankings.txt");
+                break;
+            case 2:
+                rank = Ficheiros.this.loadPlayersRankingInfo("lib/NormalRankings.txt");
+                break;
+            case 3:
+                rank = Ficheiros.this.loadPlayersRankingInfo("lib/HardRankings.txt");
+                break;
+            default:
+                System.out.println("Erro");
+        }
+        return rank;
+    }
+
 }

@@ -1,5 +1,6 @@
 package HauntedHouse;
 
+import ed.adt.OrderedListADT;
 import ed.adt.UnorderedListADT;
 import ed.exceptions.ElementNotFoundException;
 import ed.exceptions.EmptyCollectionException;
@@ -14,9 +15,11 @@ import java.util.Scanner;
  * @author João Pereira
  */
 public class TUI {
-    public TUI(Map map) throws ElementNotFoundException, FileNotFoundException, 
+
+    public TUI(Map map) throws ElementNotFoundException, FileNotFoundException,
             EmptyCollectionException, NonComparableException, IOException {
         InstanceTUI instance = new InstanceTUI(this, map.getPoints(), map.getEntranceRoom());
+        Ficheiros ficheiros = new Ficheiros();
         Scanner sc = new Scanner(System.in);
         int o;
 
@@ -34,11 +37,24 @@ public class TUI {
                 case 1:
                     this.Screen_NormalGameMode();
                     short result = map.menuModoNormal(instance);
-                    if (result == 0)
+                    if (result == 0) {
                         this.Screen_DeadInfo();
-                    else if (result == 1)
+                    } else if (result == 1) {
                         this.Screen_VictoryInfo(instance);
-                    instance.highscore(map.getName());
+                        switch (instance.getLevel()) {
+                            case 1:
+                                ficheiros.writePlayerRankingInfo(instance, map.getName());
+                                break;
+                            case 2:
+                                ficheiros.writePlayerRankingInfo(instance, map.getName());
+                                break;
+                            case 3:
+                                ficheiros.writePlayerRankingInfo(instance, map.getName());
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                     instance.reset(map.getEntranceRoom(), map.getPoints());
                     break;
                 case 2:
@@ -85,6 +101,19 @@ public class TUI {
         System.out.println("|         2 -> Normal                                              |");
         System.out.println("|         3 -> Díficil                                             |");
         System.out.println("|                                                                  |");
+        System.out.println("|__________________________________________________________________|");
+    }
+
+    protected void Screen_RankingChoice() {
+        System.out.println(" __________________________________________________________________");
+        System.out.println("|                                                                  |");
+        System.out.println("|         Classificação por pontos de vida restantes               |");
+        System.out.println("|                                                                  |");
+        System.out.println("|         1 -> Básico                                              |");
+        System.out.println("|         2 -> Normal                                              |");
+        System.out.println("|         3 -> Díficil                                             |");
+        System.out.println("|                                                                  |");
+        System.out.println("|         0 -> Sair                                                |");
         System.out.println("|__________________________________________________________________|");
     }
 
@@ -141,11 +170,11 @@ public class TUI {
         System.out.println("|                                                                  |");
         System.out.println("|                       Classficação do mapa                       |");
         System.out.println("|__________________________________________________________________|");
-        UnorderedListADT rankings = new Ficheiros().loadPlayersRankingInfo();
-        Iterator<String> iter = rankings.iterator();
-        while (iter.hasNext()) {
-            System.out.println(iter.next());
-        }
+        //UnorderedListADT rankings = new Ficheiros().loadByDifficulty();
+//        Iterator<String> iter = rankings.iterator();
+//        while (iter.hasNext()) {
+//            System.out.println(iter.next());
+//        }
         pressEnter();
     }
 
@@ -172,7 +201,7 @@ public class TUI {
         System.out.println("Pontos: " + instance.getScore());
         pressEnter();
     }
-    
+
     private void pressEnter() {
         System.out.println("\nPressione Enter para continuar...");
         new Scanner(System.in).nextLine();

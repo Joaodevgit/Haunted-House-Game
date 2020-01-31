@@ -164,10 +164,28 @@ O que foi feito neste commit:
 - Apagados os métodos repetidos que constavam em GUI (como os métodos que estão em Ficheiros).
 - Alterada a organização de rankings.txt, já não é mostrado as posições (1º, 2º,...).
 
+
 O que fazer para o próximo commit:
 
-- !URGENTE! Corrigir/Acabar método de guardar resultado do jogo em ranking.txt (método writePlayersRankingInfo da classe Ficheiros). Só funciona quando não existe nada escrito em rankings.txt.
+- !URGENTE! Corrigir/Acabar método de guardar resultado do jogo em ranking.txt (método writePlayersRankingInfo da classe Ficheiros).
+Só funciona quando não existe nada escrito em rankings.txt.
 - Acabar classe Network.
 - Criar modo simulação.
 - Documentar resto do código
 - Acabar interface gráfica
+
+--------------------------------------------------------------------------------------------------------
+
+31/01/2020 17:30s João Pereira :"Escrita e leitura para ficheiro das classificações dos jogadores por grau de dificuldade"
+
+O que foi feito neste commit:
+
+- Listagem dos melhores classificados.
+- Alteração na classe Ficheiros do uso de ArrayUnorderedList para ArrayOrderedList.
+- Escrita para os diferentes ficheiros consoante o grau de dificuldade.
+- Leitura dos diferentes ficheiros consoante o grau de dificuldade escolhido
+
+O que fazer para o próximo commit:
+
+- Listar os melhores classificados
+- Acrescentar um menu para que o utilizador mude de dificuldade e apareça a respetiva lista carregada de ficheiro

@@ -1,7 +1,10 @@
 package HauntedHouse;
 
 import ed.exceptions.ElementNotFoundException;
+import ed.exceptions.EmptyCollectionException;
 import ed.util.ArrayUnorderedList;
+import ed.util.PriorityQueue;
+import ed.util.PriorityQueueNode;
 import ed.util.matrixGraph.DirectedNetwork;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -266,10 +269,12 @@ public class Map<T> extends DirectedNetwork<T> {
 
     /**
      * Método responsávelo por simular o modo de jogo "Normal"
+     *
      * @param room aposento que irá servir como um ponto de partida
-     * @param instance 
+     * @param instance
      * @throws ElementNotFoundException caso o aposento não seja encontrado
-     * @return -1 if the player choosed to exit early in the game, 0 if the player lost the game and 1 if he won.
+     * @return -1 if the player choosed to exit early in the game, 0 if the
+     * player lost the game and 1 if he won.
      */
     public short menuModoNormal(InstanceTUI instance) throws ElementNotFoundException {
         Scanner sc = new Scanner(System.in);
@@ -290,28 +295,29 @@ public class Map<T> extends DirectedNetwork<T> {
 
             Room dstRoom = findCommonRoom(instance.getPos(), a - 1);
             long roomPoints = getEdgeWeight(instance.getPos().getName(), dstRoom.getName());
-            
+
             //If the room contains a ghost
             if (roomPoints != 0) {
                 System.out.println("Ups... Encontras-te um fantasma. Perdes-te " + (roomPoints * instance.getLevel()) + " pontos.");
                 instance.setScore(instance.getScore() - (roomPoints * instance.getLevel()));
             }
-            
+
             instance.setPos(dstRoom);
         } while (a != 0 && instance.getPos().getType() != -1 && instance.getScore() > 0);
-        
+
         //Player choosed to quit
-        if (a == 0)
+        if (a == 0) {
             return -1;
-        
-        //Player found the exit (game won)
-        else if (instance.getPos().getType() == -1)
+        } //Player found the exit (game won)
+        else if (instance.getPos().getType() == -1) {
             return 1;
-        
-        //Player has no life points remaining (game lost)
-        else
+        } //Player has no life points remaining (game lost)
+        else {
             return 0;
+        }
     }
+
+    
 
     @Override
     public String toString() {

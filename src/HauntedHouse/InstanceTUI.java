@@ -1,12 +1,5 @@
 package HauntedHouse;
 
-import ed.adt.OrderedListADT;
-import ed.adt.UnorderedListADT;
-import ed.exceptions.EmptyCollectionException;
-import ed.exceptions.NonComparableException;
-import ed.util.ArrayOrderedList;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -16,15 +9,22 @@ import java.util.Scanner;
  */
 public class InstanceTUI implements Comparable<InstanceTUI> {
 
-    public final int EASY = 1;
-    public final int NORMAL = 2;
-    public final int HARD = 3;
+    public final short EASY = 1;
+    public final short NORMAL = 2;
+    public final short HARD = 3;
     private final String name;
 
     private long score;
     private short level;
     private Room pos;
-    
+    private String mapName;
+
+    public InstanceTUI(String name, long score, String mapName) {
+        this.name = name;
+        this.score = score;
+        this.mapName = mapName;
+    }
+
     public InstanceTUI(TUI tui, long score, Room pos) {
         this.name = this.getPlayerName(tui);
         this.changeDifficultyChoice(tui);
@@ -48,6 +48,10 @@ public class InstanceTUI implements Comparable<InstanceTUI> {
         return level;
     }
 
+    public void setLevel(short level) {
+        this.level = level;
+    }
+
     public Room getPos() {
         return pos;
     }
@@ -55,7 +59,7 @@ public class InstanceTUI implements Comparable<InstanceTUI> {
     public void setPos(Room pos) {
         this.pos = pos;
     }
-    
+
     private String getPlayerName(TUI tui) {
         Scanner sc = new Scanner(System.in);
         tui.Screen_PlayerName();
@@ -101,24 +105,10 @@ public class InstanceTUI implements Comparable<InstanceTUI> {
                 this.level = NORMAL;
         }
     }
-    
+
     protected void reset(Room entrance, long points) {
         this.pos = entrance;
         this.score = points;
-    }
-    
-    protected void highscore(String mapName) throws FileNotFoundException, EmptyCollectionException, 
-            NonComparableException, IOException {
-        UnorderedListADT<String> list = new Ficheiros().loadPlayersRankingInfo();
-        if (list.size() == 10) {
-            //Verify if the points from the last line of rankings.txt are greater than this instance points.
-            int[] scores = new Ficheiros().points();
-            if (this.score > scores[scores.length-1]) {
-                new Ficheiros().writePlayersRankingInfo(this, mapName);
-            }
-        } else {
-            new Ficheiros().writePlayersRankingInfo(this, mapName);
-        }
     }
 
     @Override
