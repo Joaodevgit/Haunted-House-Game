@@ -1,5 +1,10 @@
 package HauntedHouse;
 
+import ed.adt.OrderedListADT;
+import ed.adt.UnorderedListADT;
+import ed.exceptions.NonComparableException;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -105,7 +110,7 @@ public class InstanceTUI implements Comparable<InstanceTUI> {
                 this.level = NORMAL;
         }
     }
-
+    
     protected void reset(Room entrance, long points) {
         this.pos = entrance;
         this.score = points;
@@ -113,12 +118,11 @@ public class InstanceTUI implements Comparable<InstanceTUI> {
 
     @Override
     public int compareTo(InstanceTUI o) {
-        if (this.score < o.score) {
+        if (this.score < o.score)
             return 1;
-        } else if (this.score == o.score) {
+        else if (this.score == o.score)
             return 0;
-        } else {
+        else
             return -1;
-        }
     }
 }

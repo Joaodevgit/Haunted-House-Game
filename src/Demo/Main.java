@@ -28,7 +28,7 @@ public class Main {
 
     public static void main(String[] args) {
         try {
-            Map<Room> map = new Map<>();
+            Map<Room> map = new Map<>("mapa.json");
             //new TUI(map);
 //            InstanceTUI instance1 = new InstanceTUI("ola", 2, map.getName());
 //            InstanceTUI instance2 = new InstanceTUI("jota", 5, map.getName());

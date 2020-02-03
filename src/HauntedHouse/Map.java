@@ -1,10 +1,7 @@
 package HauntedHouse;
 
 import ed.exceptions.ElementNotFoundException;
-import ed.exceptions.EmptyCollectionException;
 import ed.util.ArrayUnorderedList;
-import ed.util.PriorityQueue;
-import ed.util.PriorityQueueNode;
 import ed.util.matrixGraph.DirectedNetwork;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -39,15 +36,12 @@ public class Map<T> extends DirectedNetwork<T> {
      * <p>
      * Instancia também a rede direcionada com nós que simbolizam cada
      * aposento.</p>
-     *
-     * @throws ed.exceptions.ElementNotFoundException
-     * @throws java.io.FileNotFoundException
-     * @throws org.json.simple.parser.ParseException
+     * @param path caminho para o mapa
      */
-    public Map() throws ElementNotFoundException, FileNotFoundException, IOException, ParseException {
+    public Map(String path) throws ElementNotFoundException, FileNotFoundException, IOException, ParseException {
         super();
         //parsing file "Mapa.json" 
-        Object obj = new JSONParser().parse(new FileReader("lib/mapa.json"));
+        Object obj = new JSONParser().parse(new FileReader(path));
 
         //typecasting obj to JSONObject 
         JSONObject jo = (JSONObject) obj;
@@ -270,7 +264,6 @@ public class Map<T> extends DirectedNetwork<T> {
     /**
      * Método responsávelo por simular o modo de jogo "Normal"
      *
-     * @param room aposento que irá servir como um ponto de partida
      * @param instance
      * @throws ElementNotFoundException caso o aposento não seja encontrado
      * @return -1 if the player choosed to exit early in the game, 0 if the
@@ -317,8 +310,6 @@ public class Map<T> extends DirectedNetwork<T> {
         }
     }
 
-    
-
     @Override
     public String toString() {
         String s = "";
@@ -338,7 +329,6 @@ public class Map<T> extends DirectedNetwork<T> {
             s += this.vertices[i];
             s += "\n";
         }
-
         return s;
     }
 }

@@ -15,14 +15,20 @@ import java.util.Scanner;
  * @author João Pereira
  */
 public class TUI {
-
-    public TUI(Map map) throws ElementNotFoundException, FileNotFoundException,
-            EmptyCollectionException, NonComparableException, IOException {
-        InstanceTUI instance = new InstanceTUI(this, map.getPoints(), map.getEntranceRoom());
-        Ficheiros ficheiros = new Ficheiros();
+    
+    private InstanceTUI instance;
+    private Ficheiros files;
+    
+    public TUI(Map map) throws ElementNotFoundException, EmptyCollectionException, IOException, 
+            FileNotFoundException, NonComparableException {
+        this.instance = new InstanceTUI(this, map.getPoints(), map.getEntranceRoom());
+        this.files = new Ficheiros();
+        this.MainMenu(map);
+    }
+    
+    private void MainMenu(Map map) throws ElementNotFoundException, IOException, EmptyCollectionException, FileNotFoundException, NonComparableException {
         Scanner sc = new Scanner(System.in);
         int o;
-
         do {
             do {
                 this.Screen_MainMenu(instance.getName(), getDifficulty(instance.getLevel()));
@@ -36,24 +42,12 @@ public class TUI {
             switch (o) {
                 case 1:
                     this.Screen_NormalGameMode();
-                    short result = map.menuModoNormal(instance);
-                    if (result == 0) {
+                    short result = map.menuModoNormal(this.instance);
+                    if (result == 0)
                         this.Screen_DeadInfo();
-                    } else if (result == 1) {
+                    else if (result == 1) {
                         this.Screen_VictoryInfo(instance);
-                        switch (instance.getLevel()) {
-                            case 1:
-                                ficheiros.writePlayerRankingInfo(instance, map.getName());
-                                break;
-                            case 2:
-                                ficheiros.writePlayerRankingInfo(instance, map.getName());
-                                break;
-                            case 3:
-                                ficheiros.writePlayerRankingInfo(instance, map.getName());
-                                break;
-                            default:
-                                break;
-                        }
+                        this.files.writePlayerRankingInfo(this.instance, map.getName());
                     }
                     instance.reset(map.getEntranceRoom(), map.getPoints());
                     break;

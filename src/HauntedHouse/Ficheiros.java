@@ -36,33 +36,28 @@ public class Ficheiros {
             switch (level) {
                 case 1:
                     writer.write("-----------Nível Básico-----------");
-                    writer.newLine();
                     break;
                 case 2:
                     writer.write("-----------Nível Normal-----------");
-                    writer.newLine();
                     break;
                 case 3:
                     writer.write("-----------Nível Díficil-----------");
-                    writer.newLine();
                     break;
-                default:
+                default: break;
             }
-            Iterator<InstanceTUI> iter = list.iterator();
-            while (iter.hasNext()) {
-                InstanceTUI instancia = iter.next();
-                writer.write("Jogador:" + instancia.getName() + "|Pontos:" + instancia.getScore()
-                        + "|Mapa:" + mapName);
                 writer.newLine();
+                Iterator<InstanceTUI> iter = list.iterator();
+                while (iter.hasNext()) {
+                    InstanceTUI instancia = iter.next();
+                    writer.write("Jogador:" + instancia.getName() + "|Pontos:" + instancia.getScore()
+                            + "|Mapa:" + mapName);
+                    writer.newLine();
+                }
+                writer.flush();
+                writer.close();
             }
-            writer.flush();
-            writer.close();
         }
-    }
 
-    /*
-    Estou a repetir código ver aqui
-     */
     /**
      * Método responsável por escrever os dados de um jogador para o ficheiro
      *
@@ -74,48 +69,25 @@ public class Ficheiros {
      * @throws NonComparableException caso o elemento a ser comparado , não seja
      * comparável
      */
-    public void writePlayerRankingInfo(InstanceTUI instance, String mapName) throws IOException,
-            EmptyCollectionException, FileNotFoundException, NonComparableException {
+    public void writePlayerRankingInfo(InstanceTUI instance, String mapName) throws IOException, EmptyCollectionException,
+            FileNotFoundException, NonComparableException {
         File file;
         OrderedListADT<InstanceTUI> currentRankingList = this.loadByDifficulty(instance.getLevel());
         switch (instance.getLevel()) {
             case 1:
                 file = new File("lib/BasicRankings.txt");
-                if (currentRankingList.isEmpty()) {
-                    currentRankingList.add(instance);
-                    writeToFile(file, currentRankingList, mapName, instance.getLevel());
-                } else {
-                    if (!currentRankingList.contains(instance)) {
-                        currentRankingList.add(instance);
-                        writeToFile(file, currentRankingList, mapName, instance.getLevel());
-                    }
-                }
                 break;
             case 2:
                 file = new File("lib/NormalRankings.txt");
-                if (currentRankingList.isEmpty()) {
-                    currentRankingList.add(instance);
-                    writeToFile(file, currentRankingList, mapName, instance.getLevel());
-                } else {
-                    if (!currentRankingList.contains(instance)) {
-                        currentRankingList.add(instance);
-                        writeToFile(file, currentRankingList, mapName, instance.getLevel());
-                    }
-                }
                 break;
             case 3:
                 file = new File("lib/HardRankings.txt");
-                if (currentRankingList.isEmpty()) {
-                    currentRankingList.add(instance);
-                    writeToFile(file, currentRankingList, mapName, instance.getLevel());
-                } else {
-                    if (!currentRankingList.contains(instance)) {
-                        currentRankingList.add(instance);
-                        writeToFile(file, currentRankingList, mapName, instance.getLevel());
-                    }
-                }
                 break;
-            default:
+            default: file = new File("lib/NormalRankings.txt");
+        }
+        if (currentRankingList.isEmpty() || !currentRankingList.contains(instance)) {
+            currentRankingList.add(instance);
+            writeToFile(file, currentRankingList, mapName, instance.getLevel());
         }
     }
 
@@ -130,29 +102,25 @@ public class Ficheiros {
      * possível compará-lo
      * @throws IOException caso exista algum erro na escrita para ficheiro
      */
-    private OrderedListADT<InstanceTUI> loadPlayersRankingInfo(String path) throws FileNotFoundException, NonComparableException, IOException {
-
+    private OrderedListADT<InstanceTUI> loadPlayersRankingInfo(String path) throws FileNotFoundException,
+            NonComparableException, IOException {
         File file = new File(path);
         OrderedListADT<InstanceTUI> newRank = new ArrayOrderedList<>();
         BufferedReader br = new BufferedReader(new FileReader(file));
-        int i = 0;
         String st;
-        while ((st = br.readLine()) != null) {
-            if (st.contains("Jogador:") && st.contains("|Pontos:") && st.contains("|Mapa:")) {
-                String playerName;
-                Long playerScore;
-                String tempCharCount;
-                String mapName;
+        while ((st = br.readLine()) != null && (st.contains("Jogador:") && st.contains("|Pontos:") && st.contains("|Mapa:"))) {
+            String playerName;
+            Long playerScore;
+            String tempCharCount;
+            String mapName;
 
-                playerName = st.substring(8, st.indexOf("|P"));
-                tempCharCount = st.substring(16 + playerName.length(), st.indexOf("|M"));
-                playerScore = Long.parseLong(tempCharCount);
-                mapName = st.substring(22 + playerName.length() + tempCharCount.length(), st.length() - 1);
+            playerName = st.substring(8, st.indexOf("|P"));
+            tempCharCount = st.substring(16 + playerName.length(), st.indexOf("|M"));
+            playerScore = Long.parseLong(tempCharCount);
+            mapName = st.substring(22 + playerName.length() + tempCharCount.length(), st.length() - 1);
 
-                InstanceTUI testInstance = new InstanceTUI(playerName, playerScore, mapName);
-                newRank.add(testInstance);
-                i++;
-            }
+            InstanceTUI testInstance = new InstanceTUI(playerName, playerScore, mapName);
+            newRank.add(testInstance);
         }
         return newRank;
     }
@@ -171,22 +139,21 @@ public class Ficheiros {
     public OrderedListADT<InstanceTUI> loadByDifficulty(short level) throws FileNotFoundException,
             IOException, NonComparableException {
 
-        OrderedListADT<InstanceTUI> rank = new ArrayOrderedList<>();
+        OrderedListADT<InstanceTUI> load = new ArrayOrderedList<>();
 
         switch (level) {
             case 1:
-                rank = Ficheiros.this.loadPlayersRankingInfo("lib/BasicRankings.txt");
+                load = this.loadPlayersRankingInfo("lib/BasicRankings.txt");
                 break;
             case 2:
-                rank = Ficheiros.this.loadPlayersRankingInfo("lib/NormalRankings.txt");
+                load = this.loadPlayersRankingInfo("lib/NormalRankings.txt");
                 break;
             case 3:
-                rank = Ficheiros.this.loadPlayersRankingInfo("lib/HardRankings.txt");
+                load = this.loadPlayersRankingInfo("lib/HardRankings.txt");
                 break;
             default:
-                System.out.println("Erro");
+                throw new FileNotFoundException();
         }
-        return rank;
+        return load;
     }
-
 }
