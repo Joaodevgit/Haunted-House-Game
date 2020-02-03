@@ -1,5 +1,8 @@
 package HauntedHouse;
 
+import ed.adt.OrderedListADT;
+import ed.exceptions.ElementNotFoundException;
+import ed.exceptions.NonComparableException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -13,6 +16,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -21,6 +25,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -33,10 +38,11 @@ import javax.swing.JTextField;
  * <i>Graphical User Interface</i>
  *
  * @author Francisco Spínola
- * @author João Pereira
  */
 public class GUI implements ActionListener {
 
+    private Instance instance;
+    private Files files;
     private boolean sound;
     private Map<Room> map;
     private final JButton easy;
@@ -49,10 +55,12 @@ public class GUI implements ActionListener {
     private JButton levelChange;
     private JButton ok;
     private JButton soundB;
+    private JButton OK;
     private JTextField playerName = new JTextField(3);
     private JFrame level;
-    private JFrame menu;
+    private JFrame game;
     private JFrame player;
+    private JFrame highscoreFrame;
     private Clip clip;
 
     //private OrderedListADT<Player> ranking;
@@ -74,7 +82,11 @@ public class GUI implements ActionListener {
      *
      * @param map mapa do jogo
      */
-    public GUI(Map map) throws IOException {
+    public GUI(Map map) throws IOException, ElementNotFoundException {
+        this.instance = new Instance();
+        this.instance.setPos(map.getEntranceRoom());
+        this.instance.setScore(map.getPoints());
+        this.files = new Files();
         this.sound = true;
         this.easy = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/easy.png"))));
         this.normal = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/normal2.png"))));
@@ -194,7 +206,7 @@ public class GUI implements ActionListener {
      */
     private void mainMenu() throws IOException, UnsupportedAudioFileException, LineUnavailableException {
         //Creating the frame
-        this.menu = new JFrame("Casa Assombrada");
+        this.game = new JFrame("Casa Assombrada");
         this.close = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/close.png"))));
         this.highscore = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/highscore.png"))));
         this.levelChange = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/level.png"))));
@@ -203,18 +215,18 @@ public class GUI implements ActionListener {
         this.soundB = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/sound.png"))));
 
         //Adding content to the frame
-        this.menu.add(new BackgroundPane());
+        this.game.add(new BackgroundPane());
 
         //Configuring the frame
-        this.menu.setUndecorated(true);
-        this.menu.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.menu.setResizable(false);
-        this.menu.setSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+        this.game.setUndecorated(true);
+        this.game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.game.setResizable(false);
+        this.game.setSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
                 getDisplayMode().getWidth(), GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
                         getDisplayMode().getHeight());
-        this.menu.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.menu.setLocationRelativeTo(null);
-        this.menu.setVisible(true);
+        this.game.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.game.setLocationRelativeTo(null);
+        this.game.setVisible(true);
 
         this.clip = AudioSystem.getClip();
         AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/sounds/Fable-Lychfield-Cemetary.wav"));
@@ -283,6 +295,80 @@ public class GUI implements ActionListener {
         }
     }
 
+    public void highscore() throws IOException, NonComparableException {
+        this.highscoreFrame = new JFrame("Classificações");
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JPanel panel3 = new JPanel();
+        panel1.setLayout(new GridLayout(0, 4));
+        panel3.setLayout(new BorderLayout(10, 10));
+        
+        this.highscoreFrame.setSize(
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() - 500, 
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight() - 200
+        );
+        JLabel label = new JLabel(new ImageIcon(ImageIO.read(new File("lib/images/highscores.jfif")).
+                            getScaledInstance(this.highscoreFrame.getWidth(), this.highscoreFrame.getHeight(), Image.SCALE_DEFAULT)));
+
+        //Button config
+        this.OK = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/ok.png"))));
+        this.OK.setBorderPainted(false);
+        this.OK.setContentAreaFilled(false);
+        this.OK.setMargin(new Insets(0, 0, 0, 0));
+        this.OK.setOpaque(false);
+        
+        //Add content to the frame
+        int i = 0;
+        OrderedListADT<InstanceTUI> list = this.files.loadByDifficulty(this.instance.getLevel());
+        Iterator<InstanceTUI> iter = list.iterator();
+        panel1.setBackground(Color.BLACK);
+        panel1.add(new JLabel("<html><strong><font color=\"white\">COLOCAÇÃO</font></strong></html>"));
+        panel1.add(new JLabel("<html><strong><font color=\"white\">NOME</font></strong></html>"));
+        panel1.add(new JLabel("<html><strong><font color=\"white\">PONTOS</font></strong></html>"));
+        panel1.add(new JLabel("<html><strong><font color=\"white\">MAPA</font></strong></html>"));
+        while (iter.hasNext() && i < 20) {
+            InstanceTUI instanceTUI = iter.next();
+            int pos = ++i;
+            String line = "\n" + pos + "º   -   Nome: " + instanceTUI.getName() + "   -   Pontos: " + instanceTUI.getScore()+ "   -   Mapa: " + instanceTUI.getMapName() + "\n";
+            panel1.add(new JLabel("<html><font color=\"white\">" + pos + "º " + "</font></html>"));
+            panel1.add(new JLabel("<html><font color=\"white\">" + instanceTUI.getName() + "</font></html>"));
+            panel1.add(new JLabel("<html><font color=\"white\">" + String.valueOf(instanceTUI.getScore() + "</font></html>")));
+            panel1.add(new JLabel("<html><font color=\"white\">" + instanceTUI.getMapName() + "</font></html>"));
+        }
+        panel2.setBackground(Color.BLACK);
+        panel2.add(this.OK, BorderLayout.SOUTH);
+        String levelS;
+        switch (this.instance.getLevel()) {
+            case 1:
+                levelS = "Básico";
+                break;
+            case 2:
+                levelS = "Normal";
+                break;
+            case 3:
+                levelS = "Difícil";
+                break;
+            default:
+                levelS = "Normal";
+        }
+        panel3.add(new JLabel("<html><font color=\"red\">DIFICULDADE: " + levelS + "</font></html>"), BorderLayout.EAST);
+        panel3.add(panel1, BorderLayout.SOUTH);
+        panel3.setBackground(Color.BLACK);
+        this.highscoreFrame.add(label);
+        this.highscoreFrame.getContentPane().add(panel3, BorderLayout.NORTH);
+        this.highscoreFrame.getContentPane().add(panel2, BorderLayout.SOUTH);
+        
+        //Frame config
+        this.highscoreFrame.setLocationRelativeTo(null);
+        this.highscoreFrame.setUndecorated(true);
+        this.highscoreFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.highscoreFrame.setResizable(false);
+        this.highscoreFrame.setVisible(true);
+        
+        //Action listeners
+        this.OK.addActionListener(this);
+    }
+    
     /**
      * Jogo em Modo Simulação.
      */
@@ -305,6 +391,18 @@ public class GUI implements ActionListener {
         if (this.sound) {
             this.clip.start();
         }
+        this.game = new JFrame("Casa Assombrada");
+        
+        //Configuring the frame
+        this.game.setUndecorated(true);
+        this.game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.game.setResizable(false);
+        this.game.setSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                getDisplayMode().getWidth(), GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                        getDisplayMode().getHeight());
+        this.game.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.game.setLocationRelativeTo(null);
+        this.game.setVisible(true);
     }
 
     /**
@@ -317,9 +415,8 @@ public class GUI implements ActionListener {
     public void actionPerformed(ActionEvent ev) {
         String[] ok = {"OK"};
         if (ev.getSource().equals(this.easy)) {
-            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Básico", "Aviso",
-                    JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
             this.level.dispose();
+            this.instance.setLevel(this.instance.EASY);
             if (this.status == 0) {
                 this.status = 1;
                 try {
@@ -329,9 +426,8 @@ public class GUI implements ActionListener {
                 }
             }
         } else if (ev.getSource().equals(this.normal)) {
-            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Normal", "Aviso",
-                    JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
             this.level.dispose();
+            this.instance.setLevel(this.instance.NORMAL);
             if (this.status == 0) {
                 this.status = 1;
                 try {
@@ -341,9 +437,8 @@ public class GUI implements ActionListener {
                 }
             }
         } else if (ev.getSource().equals(this.hard)) {
-            JOptionPane.showOptionDialog(this.level, "Dificuldade:\n" + "Difícil", "Aviso",
-                    JOptionPane.OK_OPTION, JOptionPane.INFORMATION_MESSAGE, null, ok, ok[0]);
             this.level.dispose();
+            this.instance.setLevel(this.instance.HARD);
             if (this.status == 0) {
                 this.status = 1;
                 try {
@@ -360,22 +455,29 @@ public class GUI implements ActionListener {
                 JOptionPane.showOptionDialog(this.player, "Insira apenas carateres alfanuméricos!", "Aviso",
                         JOptionPane.OK_OPTION, JOptionPane.WARNING_MESSAGE, null, ok, ok[0]);
             } else {
-                this.player.dispose();
                 if (this.status == 1) {
                     this.status = 2;
+                    this.instance.setName(this.playerName.getText());
                     try {
                         this.mainMenu();
                     } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
                         Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
+                this.player.dispose();
             }
+        } else if (ev.getSource().equals(this.OK)) {
+            this.highscoreFrame.dispose();
         } else if (ev.getSource().equals(this.close)) {
             System.exit(0);
         } else if (ev.getSource().equals(this.levelChange)) {
             this.levelChanger();
         } else if (ev.getSource().equals(this.highscore)) {
-            //this.highscore();
+            try {
+                this.highscore();
+            } catch (IOException | NonComparableException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else if (ev.getSource().equals(this.normalMode)) {
             this.clip.stop();
             try {

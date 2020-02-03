@@ -40,7 +40,7 @@ public class Map<T> extends DirectedNetwork<T> {
      */
     public Map(String path) throws ElementNotFoundException, FileNotFoundException, IOException, ParseException {
         super();
-        //parsing file "Mapa.json" 
+        //parsing JSON map file
         Object obj = new JSONParser().parse(new FileReader(path));
 
         //typecasting obj to JSONObject 
@@ -293,6 +293,8 @@ public class Map<T> extends DirectedNetwork<T> {
             if (roomPoints != 0) {
                 System.out.println("Ups... Encontras-te um fantasma. Perdes-te " + (roomPoints * instance.getLevel()) + " pontos.");
                 instance.setScore(instance.getScore() - (roomPoints * instance.getLevel()));
+                if (instance.getScore() < 0)
+                    instance.setScore(0);
             }
 
             instance.setPos(dstRoom);
@@ -301,12 +303,14 @@ public class Map<T> extends DirectedNetwork<T> {
         //Player choosed to quit
         if (a == 0) {
             return -1;
-        } //Player found the exit (game won)
-        else if (instance.getPos().getType() == -1) {
-            return 1;
-        } //Player has no life points remaining (game lost)
-        else {
+        } 
+        //Player has no life points remaining (game lost)
+        else if (instance.getScore() == 0) {
             return 0;
+        }
+        //Player found the exit (game won)
+        else {
+            return 1;
         }
     }
 

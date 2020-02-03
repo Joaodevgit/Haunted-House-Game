@@ -189,3 +189,28 @@ O que fazer para o próximo commit:
 
 - Listar os melhores classificados
 - Acrescentar um menu para que o utilizador mude de dificuldade e apareça a respetiva lista carregada de ficheiro
+
+--------------------------------------------------------------------------------------------------------
+
+03/02/2020 22:13 Francisco Spínola: "GUI_Update"
+
+O que foi feito neste commit:
+
+- Correção de bugs no GUI
+- Criado o novo ficheiro de execução final (mas ainda temos o Main.java para efeitos de testes) - Execute.java.
+- Alterada a estrutura de Instance. Instance é para uso do GUI e InstanceTUI é para uso do TUI.
+- Adicionada a parte de TUI e GUI para ver o top 25 de classificações.
+- Correção de bug nos pontos (em vez de o mínimo ser 0, ficavam com valores negativos).
+- Biblioteca API_ED atualizada.
+
+O que fazer para o próximo commit:
+
+- Criar a interface gráfica para modo normal.
+- Criar a interface gráfica para modo simulação
+- Corrigir bug de ter várias janelas iguais abertas (o que impossibilita outras de conseguirem fechar).
+- Adicionar método iterador shortest path à biblioteca API_ED
+- Atualizar API_ED
+- Comentar métodos
+- Apagar código desnecessário/Limpar código.
+
+--------------------------------------------------------------------------------------------------------

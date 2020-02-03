@@ -17,12 +17,12 @@ import java.util.Scanner;
 public class TUI {
     
     private InstanceTUI instance;
-    private Ficheiros files;
+    private Files files;
     
     public TUI(Map map) throws ElementNotFoundException, EmptyCollectionException, IOException, 
             FileNotFoundException, NonComparableException {
         this.instance = new InstanceTUI(this, map.getPoints(), map.getEntranceRoom());
-        this.files = new Ficheiros();
+        this.files = new Files();
         this.MainMenu(map);
     }
     
@@ -164,11 +164,15 @@ public class TUI {
         System.out.println("|                                                                  |");
         System.out.println("|                       Classficação do mapa                       |");
         System.out.println("|__________________________________________________________________|");
-        //UnorderedListADT rankings = new Ficheiros().loadByDifficulty();
-//        Iterator<String> iter = rankings.iterator();
-//        while (iter.hasNext()) {
-//            System.out.println(iter.next());
-//        }
+        OrderedListADT<InstanceTUI> rankings = this.files.loadByDifficulty((short)this.instance.getLevel());
+        Iterator<InstanceTUI> iter = rankings.iterator();
+        int count = 0;
+        while (iter.hasNext() && count < 10) {
+            int pos = count+1;
+            InstanceTUI instance = iter.next();
+            System.out.println(pos + "º  -  " + instance.getName() + "  -  " + instance.getScore());
+            count++;
+        }
         pressEnter();
     }
 

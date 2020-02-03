@@ -1,2 +1,2 @@
 -----------Nível Básico-----------
-Jogador:ola|Pontos:2|Mapa:sexta-feira 13
+Jogador:hackerredes|Pontos:80|Mapa:sexta-feira 13

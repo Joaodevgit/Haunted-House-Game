@@ -18,7 +18,7 @@ import java.util.Iterator;
  * @author João Pereira
  * @author Francisco Spínola
  */
-public class Ficheiros {
+public class Files {
 
     /**
      * Método responsável por escrever todas as informações necessárias (nome e
@@ -108,6 +108,7 @@ public class Ficheiros {
         OrderedListADT<InstanceTUI> newRank = new ArrayOrderedList<>();
         BufferedReader br = new BufferedReader(new FileReader(file));
         String st;
+        br.readLine();
         while ((st = br.readLine()) != null && (st.contains("Jogador:") && st.contains("|Pontos:") && st.contains("|Mapa:"))) {
             String playerName;
             Long playerScore;
@@ -117,7 +118,7 @@ public class Ficheiros {
             playerName = st.substring(8, st.indexOf("|P"));
             tempCharCount = st.substring(16 + playerName.length(), st.indexOf("|M"));
             playerScore = Long.parseLong(tempCharCount);
-            mapName = st.substring(22 + playerName.length() + tempCharCount.length(), st.length() - 1);
+            mapName = st.substring(22 + playerName.length() + tempCharCount.length(), st.length());
 
             InstanceTUI testInstance = new InstanceTUI(playerName, playerScore, mapName);
             newRank.add(testInstance);

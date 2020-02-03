@@ -1,4 +1,30 @@
 -----------Nível Normal-----------
-Jogador:conaaan|Pontos:60|Mapa:sexta-feira 13
-Jogador:wowgood|Pontos:20|Mapa:sexta-feira 13
-Jogador:asdqq|Pontos:1|Mapa:sexta-feira 13
+Jogador:iub|Pontos:80|Mapa:sexta-feira 13
+Jogador:francisco|Pontos:80|Mapa:sexta-feira 13
+Jogador:eu|Pontos:70|Mapa:sexta-feira 13
+Jogador:gamer|Pontos:70|Mapa:sexta-feira 13
+Jogador:iub|Pontos:70|Mapa:sexta-feira 13
+Jogador:pro|Pontos:70|Mapa:sexta-feira 13
+Jogador:joao|Pontos:50|Mapa:sexta-feira 13
+Jogador:bot|Pontos:50|Mapa:sexta-feira 13
+Jogador:francisco|Pontos:45|Mapa:sexta-feira 13
+Jogador:iub|Pontos:45|Mapa:sexta-feira 13
+Jogador:iub|Pontos:40|Mapa:sexta-feira 13
+Jogador:joao|Pontos:40|Mapa:sexta-feira 13
+Jogador:tiago|Pontos:40|Mapa:sexta-feira 13
+Jogador:iub|Pontos:40|Mapa:sexta-feira 13
+Jogador:iub|Pontos:40|Mapa:sexta-feira 13
+Jogador:spinola|Pontos:40|Mapa:sexta-feira 13
+Jogador:iub|Pontos:40|Mapa:sexta-feira 13
+Jogador:iub|Pontos:30|Mapa:sexta-feira 13
+Jogador:jogador|Pontos:30|Mapa:sexta-feira 13
+Jogador:iub|Pontos:30|Mapa:sexta-feira 13
+Jogador:iub|Pontos:30|Mapa:sexta-feira 13
+Jogador:iub|Pontos:30|Mapa:sexta-feira 13
+Jogador:iub|Pontos:20|Mapa:sexta-feira 13
+Jogador:iub|Pontos:20|Mapa:sexta-feira 13
+Jogador:iub|Pontos:15|Mapa:sexta-feira 13
+Jogador:iub|Pontos:10|Mapa:sexta-feira 13
+Jogador:francisco|Pontos:0|Mapa:sexta-feira 13
+
+
