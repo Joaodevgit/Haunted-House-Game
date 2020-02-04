@@ -26,6 +26,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -58,6 +59,7 @@ public class GUI implements ActionListener {
     private JButton levelChange;
     private JButton ok;
     private JButton soundB;
+    private JButton menuB;
     private JButton OK;
     private JTextField playerName = new JTextField(3);
     private JFrame level;
@@ -88,7 +90,7 @@ public class GUI implements ActionListener {
     public GUI(Map map) throws IOException, ElementNotFoundException {
         this.blocked = false;
         this.instance = new Instance();
-        this.instance.setPos(map.getEntranceRoom());
+        this.instance.setPos((Room)map.getEntranceRoom());
         this.instance.setScore(map.getPoints());
         this.files = new Files();
         this.sound = true;
@@ -380,13 +382,8 @@ public class GUI implements ActionListener {
     /**
      * Jogo em Modo Simulação.
      */
-    private void simulation() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
-        this.clip = AudioSystem.getClip();
-        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/sounds/gamemusic.wav"));
-        this.clip.open(inputStream);
-        if (this.sound) {
-            this.clip.start();
-        }
+    private void simulation() {
+        
     }
 
     /**
@@ -394,12 +391,17 @@ public class GUI implements ActionListener {
      */
     private void normal() throws LineUnavailableException, IOException, UnsupportedAudioFileException, ElementNotFoundException {
         this.game = new JFrame("Casa Assombrada");
+        this.menuB = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/menu.png"))));
+        this.menuB.setBorderPainted(false);
+        this.menuB.setContentAreaFilled(false);
+        this.menuB.setMargin(new Insets(0, 0, 0, 0));
+        this.menuB.setOpaque(false);
         JPanel panel = new JPanel(new GridBagLayout());
-        JPanel panel2 = new JPanel(new BorderLayout());
+        JPanel panel2 = new JPanel(new BorderLayout(0, -30));
         GridBagConstraints gbc = new GridBagConstraints();
         
-        this.points = new JLabel("PONTOS: " + this.instance.getScore());
-        this.pos = new JLabel("APOSENTO ATUAL: " + this.instance.getPos().getName().toUpperCase());
+        this.points = new JLabel("<html><h1><font color=\"white\">PONTOS: " + this.instance.getScore() + "</font></h1></html>");
+        this.pos = new JLabel("<html><h3><font color=\"white\">APOSENTO ATUAL: " + this.instance.getPos().getName().toUpperCase() + "</font></h3></html>");
         
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.weightx = 1;
@@ -409,12 +411,15 @@ public class GUI implements ActionListener {
         panel.add(this.points, gbc);
         gbc.gridy = 1;
         panel.add(this.pos, gbc);
+        panel.setBackground(Color.BLACK);
+        
+        panel2.add(this.soundB);
+        panel2.add(this.menuB);
         
         panel2.add(panel, BorderLayout.NORTH);
-        
+        panel2.setBackground(Color.BLACK);
         this.game.add(panel2, BorderLayout.EAST);
         this.game.add(new GamePane());
-        
         
         //Configuring audio
         this.clip = AudioSystem.getClip();
@@ -434,13 +439,20 @@ public class GUI implements ActionListener {
         this.game.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.game.setLocationRelativeTo(null);
         this.game.setVisible(true);
+        
+        this.soundB.addActionListener(this);
+        this.menuB.addActionListener(this);
     }
     
     class GamePane extends JPanel {
         public GamePane() throws IOException, ElementNotFoundException {
             setLayout(new BorderLayout());
+            /*
+            JPanel panel = new JPanel();
+            panel.setLayout(new BorderLayout(15, 15));
             
             JPanel doors = new JPanel(new GridBagLayout());
+            JPanel text = new JPanel(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.weightx = 1;
@@ -455,7 +467,7 @@ public class GUI implements ActionListener {
             int i = 0;
             while (i < rooms.size()) {
                 gbc.anchor = GridBagConstraints.NORTH;
-                doors.add(new JLabel("<html><h1><strong><font color=\"white\">" + iter.next().getName().toUpperCase() + "</font></strong></h1></html>"));
+                text.add(new JLabel("<html><h1><strong><font color=\"red\">" + iter.next().getName().toUpperCase() + "</font></strong></h1></html>"));
                 gbc.anchor = GridBagConstraints.SOUTH;
                 doors.add(this.makeButton(new JButton(new ImageIcon(ImageIO.read(
                         new File("lib/images/closedDoor.png")).getScaledInstance(GraphicsEnvironment.
@@ -466,7 +478,38 @@ public class GUI implements ActionListener {
             }
             doors.setBackground(Color.BLACK);
             
-            add(doors, BorderLayout.SOUTH);
+            panel.add(text, BorderLayout.NORTH);
+            panel.add(doors, BorderLayout.SOUTH);
+            
+            add(panel, BorderLayout.SOUTH);
+            */
+            
+            JPanel panel = new JPanel();
+            JPanel panel2 = new JPanel();
+            panel2.setLayout(new BorderLayout());
+            panel2.add(new JLabel(new ImageIcon("lib/images/ok.png")));
+            
+            UnorderedListADT<Room> rooms = GUI.this.map.getRoomEdges(GUI.this.instance.getPos().getName());
+            Iterator<Room> iter = rooms.iterator();
+            panel.setLayout(new GridLayout(2, rooms.size(), 20, 20));
+            while (iter.hasNext()) {
+                JLabel jlabel = new JLabel("<html><h1><strong><font color=\"white\">" + iter.next().getName().toUpperCase() + "</font></strong></h1></html>", (int)JLabel.CENTER_ALIGNMENT);
+                panel.add(jlabel);
+            }
+            
+            int i = 0;
+            while (i < rooms.size()) {
+                panel.add(this.makeButton(new JButton(new ImageIcon(ImageIO.read(
+                        new File("lib/images/closedDoor.png")).getScaledInstance(GraphicsEnvironment.
+                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5, 
+                                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                                    getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT)))));
+                i++;
+            }
+            panel.setBackground(Color.BLACK);
+            
+            add(panel, BorderLayout.SOUTH);
+            add(panel2, BorderLayout.NORTH);
         }
         
         /**
@@ -563,20 +606,24 @@ public class GUI implements ActionListener {
             }
         } else if (ev.getSource().equals(this.normalMode) && !this.blocked) {
             this.clip.stop();
+            this.game.dispose();
             try {
                 this.normal();
             } catch (LineUnavailableException | IOException | UnsupportedAudioFileException | ElementNotFoundException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (ev.getSource().equals(this.simulationMode) && !this.blocked) {
-            this.clip.stop();
-            try {
-                this.simulation();
-            } catch (LineUnavailableException | IOException | UnsupportedAudioFileException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            this.simulation();
         } else if (ev.getSource().equals(this.soundB) && !this.blocked) {
             this.sound();
+        } else if (ev.getSource().equals(this.menuB)) {
+            this.clip.stop();
+            this.game.dispose();
+            try {
+                this.mainMenu();
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

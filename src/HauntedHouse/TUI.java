@@ -21,7 +21,7 @@ public class TUI {
     
     public TUI(Map map) throws ElementNotFoundException, EmptyCollectionException, IOException, 
             FileNotFoundException, NonComparableException {
-        this.instance = new InstanceTUI(this, map.getPoints(), map.getEntranceRoom());
+        this.instance = new InstanceTUI(this, map.getPoints(), (Room) map.getEntranceRoom());
         this.files = new Files();
         this.MainMenu(map);
     }
@@ -49,11 +49,11 @@ public class TUI {
                         this.Screen_VictoryInfo(instance);
                         this.files.writePlayerRankingInfo(this.instance, map.getName());
                     }
-                    instance.reset(map.getEntranceRoom(), map.getPoints());
+                    instance.reset((Room)map.getEntranceRoom(), map.getPoints());
                     break;
                 case 2:
                     this.Screen_SimulationGameMode();
-                    instance.reset(map.getEntranceRoom(), map.getPoints());
+                    instance.reset((Room)map.getEntranceRoom(), map.getPoints());
                     break;
                 case 3:
                     this.Screen_MapRanking();

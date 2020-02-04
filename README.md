@@ -214,3 +214,22 @@ O que fazer para o próximo commit:
 - Apagar código desnecessário/Limpar código.
 
 --------------------------------------------------------------------------------------------------------
+
+04/02/2020 22:17 Francisco Spínola: "Full API"
+
+O que foi feito neste commit:
+
+- A API foi concluída e atualizada (iteratorShortestPath adicionado em Network)
+- A GUI foi mais desenvolvida (Modo Normal)
+- Correção de bugs.
+
+O que fazer para o próximo commit:
+
+- Corrigir bug ao ligar/desligar música ao jogar o modo normal em GUI
+- Acabar modo simulação
+- Acabar interface gráfica
+- Remover conteúdo desnecessário (limpar código)
+- Documentar todo o código
+- Alterar o conteúdo dos catch de todos os try, para que o desenvolvedor perceba o porquê e onde foi lançada a exceção
+
+--------------------------------------------------------------------------------------------------------

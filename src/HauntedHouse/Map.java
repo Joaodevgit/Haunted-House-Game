@@ -126,7 +126,7 @@ public class Map<T> extends DirectedNetwork<T> {
      * @throws ElementNotFoundException exceção lançada caso não exista um
      * aposento de entrada
      */
-    public Room getEntranceRoom() throws ElementNotFoundException {
+    public T getEntranceRoom() throws ElementNotFoundException {
         int i = 0;
         while (i < super.numVertices && ((Room) super.vertices[i]).getType() != 1) {
             i++;
@@ -134,7 +134,7 @@ public class Map<T> extends DirectedNetwork<T> {
         if (i == super.numVertices) {
             throw new ElementNotFoundException();
         }
-        return (Room) super.vertices[i];
+        return super.vertices[i];
     }
 
     /**
@@ -187,29 +187,15 @@ public class Map<T> extends DirectedNetwork<T> {
      * @throws ElementNotFoundException caso o nome do aposento não seja
      * enontrado
      */
-    public ArrayUnorderedList<Room> getRoomEdges(String name) throws ElementNotFoundException {
-        ArrayUnorderedList<Room> commonRooms = new ArrayUnorderedList<>();
+    public ArrayUnorderedList<T> getRoomEdges(String name) throws ElementNotFoundException {
+        ArrayUnorderedList<T> commonRooms = new ArrayUnorderedList<>();
         int pos = findRoom(name);
         for (int i = 0; i < super.numVertices; i++) {
             if (super.adjMatrix[pos][i] != Double.POSITIVE_INFINITY) {
-                commonRooms.addToRear((Room) super.vertices[i]);
+                commonRooms.addToRear(super.vertices[i]);
             }
         }
         return commonRooms;
-//        int pos = findRoom(name);
-//        Room[] temp_commonRooms = new Room[super.numVertices - 1];
-//        int j = 0;
-//        for (int i = 0; i < super.numVertices; i++) {
-//            if (super.adjMatrix[pos][i] != Double.POSITIVE_INFINITY) {
-//                temp_commonRooms[j] = (Room) super.vertices[i];
-//                j++;
-//            }
-//        }
-//        Room[] commonRoom = new Room[j];
-//        for (int i = 0; i < commonRoom.length; i++) {
-//            commonRoom[i] = temp_commonRooms[i];
-//        }
-//        return commonRoom;
     }
 
     /**
@@ -219,13 +205,13 @@ public class Map<T> extends DirectedNetwork<T> {
      * @return
      * @throws ElementNotFoundException
      */
-    public ArrayUnorderedList<Room> printCommonRooms(Room room) throws ElementNotFoundException {
-        ArrayUnorderedList<Room> rooms = getRoomEdges(room.getName());
-        Iterator<Room> iter = rooms.iterator();
+    public ArrayUnorderedList<T> printCommonRooms(Room room) throws ElementNotFoundException {
+        ArrayUnorderedList<T> rooms = getRoomEdges(room.getName());
+        Iterator<T> iter = rooms.iterator();
         int i = 0;
         System.out.println("Opções: ");
         while (iter.hasNext()) {
-            Room roomIter = iter.next();
+            Room roomIter = (Room) iter.next();
             System.out.println((i + 1) + " - " + roomIter.getName());
             i++;
         }
@@ -246,13 +232,13 @@ public class Map<T> extends DirectedNetwork<T> {
      * @throws ArrayIndexOutOfBoundsException caso o nº de option esteja fora do
      * intervalo
      */
-    public Room findCommonRoom(Room room, int option) throws ElementNotFoundException, ArrayIndexOutOfBoundsException {
+    public T findCommonRoom(Room room, int option) throws ElementNotFoundException, ArrayIndexOutOfBoundsException {
 
-        ArrayUnorderedList<Room> commonRooms = getRoomEdges(room.getName());
+        ArrayUnorderedList<T> commonRooms = getRoomEdges(room.getName());
         if (option < 0 || option > commonRooms.size() - 1) {
             throw new ArrayIndexOutOfBoundsException();
         }
-        Iterator<Room> iter = commonRooms.iterator();
+        Iterator<T> iter = commonRooms.iterator();
         int i = 0;
         while (iter.hasNext() && i != option) {
             i++;
@@ -271,7 +257,7 @@ public class Map<T> extends DirectedNetwork<T> {
      */
     public short menuModoNormal(InstanceTUI instance) throws ElementNotFoundException {
         Scanner sc = new Scanner(System.in);
-        ArrayUnorderedList<Room> choiceRooms;
+        ArrayUnorderedList<T> choiceRooms;
         int a;
         do {
             do {
@@ -286,7 +272,7 @@ public class Map<T> extends DirectedNetwork<T> {
                 a = sc.nextInt();
             } while (a < 0 || a > choiceRooms.size());
 
-            Room dstRoom = findCommonRoom(instance.getPos(), a - 1);
+            Room dstRoom = (Room) findCommonRoom(instance.getPos(), a - 1);
             long roomPoints = getEdgeWeight(instance.getPos().getName(), dstRoom.getName());
 
             //If the room contains a ghost
