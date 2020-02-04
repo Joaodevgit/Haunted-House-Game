@@ -1,6 +1,7 @@
 package HauntedHouse;
 
 import ed.adt.OrderedListADT;
+import ed.adt.UnorderedListADT;
 import ed.exceptions.ElementNotFoundException;
 import ed.exceptions.NonComparableException;
 import java.awt.BorderLayout;
@@ -25,7 +26,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -41,10 +41,13 @@ import javax.swing.JTextField;
  */
 public class GUI implements ActionListener {
 
+    private boolean blocked;
     private Instance instance;
     private Files files;
     private boolean sound;
     private Map<Room> map;
+    private JLabel points;
+    private JLabel pos;
     private final JButton easy;
     private final JButton normal;
     private final JButton hard;
@@ -83,6 +86,7 @@ public class GUI implements ActionListener {
      * @param map mapa do jogo
      */
     public GUI(Map map) throws IOException, ElementNotFoundException {
+        this.blocked = false;
         this.instance = new Instance();
         this.instance.setPos(map.getEntranceRoom());
         this.instance.setScore(map.getPoints());
@@ -100,6 +104,8 @@ public class GUI implements ActionListener {
      * Método responsável por alterar o nível de dificuldade do jogo.
      */
     private void levelChanger() {
+        this.blocked = true;
+        
         //Creating the frame and panels
         this.level = new JFrame("Dificuldade");
         JPanel panel = new JPanel();
@@ -296,6 +302,8 @@ public class GUI implements ActionListener {
     }
 
     public void highscore() throws IOException, NonComparableException {
+        this.blocked = true;
+        
         this.highscoreFrame = new JFrame("Classificações");
         JPanel panel1 = new JPanel();
         JPanel panel2 = new JPanel();
@@ -304,10 +312,10 @@ public class GUI implements ActionListener {
         panel3.setLayout(new BorderLayout(10, 10));
         
         this.highscoreFrame.setSize(
-                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() - 500, 
-                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight() - 200
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth()/* - 500*/, 
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight()/* - 200*/
         );
-        JLabel label = new JLabel(new ImageIcon(ImageIO.read(new File("lib/images/highscores.jfif")).
+        JLabel label = new JLabel(new ImageIcon(ImageIO.read(new File("lib/images/TOP25.jpg")).
                             getScaledInstance(this.highscoreFrame.getWidth(), this.highscoreFrame.getHeight(), Image.SCALE_DEFAULT)));
 
         //Button config
@@ -326,7 +334,7 @@ public class GUI implements ActionListener {
         panel1.add(new JLabel("<html><strong><font color=\"white\">NOME</font></strong></html>"));
         panel1.add(new JLabel("<html><strong><font color=\"white\">PONTOS</font></strong></html>"));
         panel1.add(new JLabel("<html><strong><font color=\"white\">MAPA</font></strong></html>"));
-        while (iter.hasNext() && i < 20) {
+        while (iter.hasNext() && i < 25) {
             InstanceTUI instanceTUI = iter.next();
             int pos = ++i;
             String line = "\n" + pos + "º   -   Nome: " + instanceTUI.getName() + "   -   Pontos: " + instanceTUI.getScore()+ "   -   Mapa: " + instanceTUI.getMapName() + "\n";
@@ -384,14 +392,37 @@ public class GUI implements ActionListener {
     /**
      * Jogo em Modo Normal.
      */
-    private void normal() throws LineUnavailableException, IOException, UnsupportedAudioFileException {
+    private void normal() throws LineUnavailableException, IOException, UnsupportedAudioFileException, ElementNotFoundException {
+        this.game = new JFrame("Casa Assombrada");
+        JPanel panel = new JPanel(new GridBagLayout());
+        JPanel panel2 = new JPanel(new BorderLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        
+        this.points = new JLabel("PONTOS: " + this.instance.getScore());
+        this.pos = new JLabel("APOSENTO ATUAL: " + this.instance.getPos().getName().toUpperCase());
+        
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1;
+        gbc.gridwidth = GridBagConstraints.REMAINDER;
+        gbc.anchor = GridBagConstraints.NORTH;
+        
+        panel.add(this.points, gbc);
+        gbc.gridy = 1;
+        panel.add(this.pos, gbc);
+        
+        panel2.add(panel, BorderLayout.NORTH);
+        
+        this.game.add(panel2, BorderLayout.EAST);
+        this.game.add(new GamePane());
+        
+        
+        //Configuring audio
         this.clip = AudioSystem.getClip();
         AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/sounds/gamemusic.wav"));
         this.clip.open(inputStream);
         if (this.sound) {
             this.clip.start();
         }
-        this.game = new JFrame("Casa Assombrada");
         
         //Configuring the frame
         this.game.setUndecorated(true);
@@ -403,6 +434,54 @@ public class GUI implements ActionListener {
         this.game.setExtendedState(JFrame.MAXIMIZED_BOTH);
         this.game.setLocationRelativeTo(null);
         this.game.setVisible(true);
+    }
+    
+    class GamePane extends JPanel {
+        public GamePane() throws IOException, ElementNotFoundException {
+            setLayout(new BorderLayout());
+            
+            JPanel doors = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1;
+            gbc.gridwidth = GridBagConstraints.REMAINDER;
+            gbc.anchor = GridBagConstraints.NORTH;
+            
+            UnorderedListADT<Room> rooms = GUI.this.map.getRoomEdges(GUI.this.instance.getPos().getName());
+            Iterator<Room> iter = rooms.iterator();
+//            while (iter.hasNext()) {
+//                doors.add(new JLabel("<html><h1><strong><font color=\"white\">" + iter.next().getName().toUpperCase() + "</font></strong></h1></html>"), gbc);
+//            }
+            int i = 0;
+            while (i < rooms.size()) {
+                gbc.anchor = GridBagConstraints.NORTH;
+                doors.add(new JLabel("<html><h1><strong><font color=\"white\">" + iter.next().getName().toUpperCase() + "</font></strong></h1></html>"));
+                gbc.anchor = GridBagConstraints.SOUTH;
+                doors.add(this.makeButton(new JButton(new ImageIcon(ImageIO.read(
+                        new File("lib/images/closedDoor.png")).getScaledInstance(GraphicsEnvironment.
+                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5, 
+                                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                                    getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT)))));
+                i++;
+            }
+            doors.setBackground(Color.BLACK);
+            
+            add(doors, BorderLayout.SOUTH);
+        }
+        
+        /**
+         * Método que altera o formato visual de um <i>JButton</i>.
+         *
+         * @param btn botão a ser alterado
+         * @return botão alterado
+         */
+        private JButton makeButton(JButton btn) {
+            btn.setBorderPainted(false);
+            btn.setContentAreaFilled(false);
+            btn.setMargin(new Insets(0, 0, 0, 0));
+            btn.setOpaque(false);
+            return btn;
+        }
     }
 
     /**
@@ -417,6 +496,7 @@ public class GUI implements ActionListener {
         if (ev.getSource().equals(this.easy)) {
             this.level.dispose();
             this.instance.setLevel(this.instance.EASY);
+            this.blocked = false;
             if (this.status == 0) {
                 this.status = 1;
                 try {
@@ -428,6 +508,7 @@ public class GUI implements ActionListener {
         } else if (ev.getSource().equals(this.normal)) {
             this.level.dispose();
             this.instance.setLevel(this.instance.NORMAL);
+            this.blocked = false;
             if (this.status == 0) {
                 this.status = 1;
                 try {
@@ -439,6 +520,7 @@ public class GUI implements ActionListener {
         } else if (ev.getSource().equals(this.hard)) {
             this.level.dispose();
             this.instance.setLevel(this.instance.HARD);
+            this.blocked = false;
             if (this.status == 0) {
                 this.status = 1;
                 try {
@@ -468,32 +550,33 @@ public class GUI implements ActionListener {
             }
         } else if (ev.getSource().equals(this.OK)) {
             this.highscoreFrame.dispose();
-        } else if (ev.getSource().equals(this.close)) {
+            this.blocked = false;
+        } else if (ev.getSource().equals(this.close) && !this.blocked) {
             System.exit(0);
-        } else if (ev.getSource().equals(this.levelChange)) {
+        } else if (ev.getSource().equals(this.levelChange) && !this.blocked) {
             this.levelChanger();
-        } else if (ev.getSource().equals(this.highscore)) {
+        } else if (ev.getSource().equals(this.highscore) && !this.blocked) {
             try {
                 this.highscore();
             } catch (IOException | NonComparableException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if (ev.getSource().equals(this.normalMode)) {
+        } else if (ev.getSource().equals(this.normalMode) && !this.blocked) {
             this.clip.stop();
             try {
                 this.normal();
-            } catch (LineUnavailableException | IOException | UnsupportedAudioFileException ex) {
+            } catch (LineUnavailableException | IOException | UnsupportedAudioFileException | ElementNotFoundException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if (ev.getSource().equals(this.simulationMode)) {
+        } else if (ev.getSource().equals(this.simulationMode) && !this.blocked) {
             this.clip.stop();
             try {
                 this.simulation();
             } catch (LineUnavailableException | IOException | UnsupportedAudioFileException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else if (ev.getSource().equals(this.soundB)) {
-            sound();
+        } else if (ev.getSource().equals(this.soundB) && !this.blocked) {
+            this.sound();
         }
     }
 }

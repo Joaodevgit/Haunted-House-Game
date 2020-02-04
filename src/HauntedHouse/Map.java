@@ -291,7 +291,7 @@ public class Map<T> extends DirectedNetwork<T> {
 
             //If the room contains a ghost
             if (roomPoints != 0) {
-                System.out.println("Ups... Encontras-te um fantasma. Perdes-te " + (roomPoints * instance.getLevel()) + " pontos.");
+                System.out.println("Ups... Encontraste um fantasma. Perdeste " + (roomPoints * instance.getLevel()) + " pontos.");
                 instance.setScore(instance.getScore() - (roomPoints * instance.getLevel()));
                 if (instance.getScore() < 0)
                     instance.setScore(0);
