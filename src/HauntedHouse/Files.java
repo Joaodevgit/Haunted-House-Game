@@ -3,7 +3,7 @@ package HauntedHouse;
 import ed.adt.OrderedListADT;
 import ed.exceptions.EmptyCollectionException;
 import ed.exceptions.NonComparableException;
-import ed.util.ArrayOrderedList;
+import ed.util.LinkedOrderedList;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Iterator;
 
 /**
+ * Classe responsável por tratar da leitura e escrita de ficheiros.
  *
  * @author João Pereira
  * @author Francisco Spínola
@@ -22,16 +23,15 @@ public class Files {
 
     /**
      * Método responsável por escrever todas as informações necessárias (nome e
-     * pontuação do jogador, o nome do mapa e a dificuldadeem que este jogou
+     * pontuação do jogador, nome do mapa e a dificuldade em que este jogou).
      *
      * @param file ficheiro a ser escrito
-     * @param list lista ordenada que irá conter a classificação atual de cada
-     * dificuldade
+     * @param list lista ordenada que irá conter a classificação atual de uma determinada dificuldade
      * @param mapName nome do mapa
      * @param level dificuldade do mapa
-     * @throws IOException
+     * @throws IOException erro na escrita para ficheiro
      */
-    private void writeToFile(File file, OrderedListADT<InstanceTUI> list, String mapName, short level) throws IOException {
+    private void writeToFile(File file, OrderedListADT<Instance> list, String mapName, short level) throws IOException {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             switch (level) {
                 case 1:
@@ -46,10 +46,10 @@ public class Files {
                 default: break;
             }
                 writer.newLine();
-                Iterator<InstanceTUI> iter = list.iterator();
+                Iterator<Instance> iter = list.iterator();
                 while (iter.hasNext()) {
-                    InstanceTUI instancia = iter.next();
-                    writer.write("Jogador:" + instancia.getName() + "|Pontos:" + instancia.getScore()
+                    Instance instance = iter.next();
+                    writer.write("Jogador:" + instance.getName() + "|Pontos:" + instance.getScore()
                             + "|Mapa:" + mapName);
                     writer.newLine();
                 }
@@ -61,7 +61,7 @@ public class Files {
     /**
      * Método responsável por escrever os dados de um jogador para o ficheiro
      *
-     * @param instance
+     * @param instance instância atual do jogo
      * @param mapName nome do mapa
      * @throws IOException caso exista algum erro na escrita para ficheiro
      * @throws EmptyCollectionException caso a lista esteja vazia
@@ -69,10 +69,10 @@ public class Files {
      * @throws NonComparableException caso o elemento a ser comparado , não seja
      * comparável
      */
-    public void writePlayerRankingInfo(InstanceTUI instance, String mapName) throws IOException, EmptyCollectionException,
+    public void writePlayerRankingInfo(Instance instance, String mapName) throws IOException, EmptyCollectionException,
             FileNotFoundException, NonComparableException {
         File file;
-        OrderedListADT<InstanceTUI> currentRankingList = this.loadByDifficulty(instance.getLevel());
+        OrderedListADT<Instance> currentRankingList = this.loadByDifficulty(instance.getLevel());
         switch (instance.getLevel()) {
             case 1:
                 file = new File("lib/BasicRankings.txt");
@@ -95,17 +95,16 @@ public class Files {
      * Método responsável por carregar o ficheiro de classificação dos jogadores
      *
      * @param path caminho do ficheiro a ser carregado
-     * @return o uma lista com o conteúdo que foi carregado
-     *
+     * @return uma lista ordenada com o conteúdo que foi carregado
      * @throws FileNotFoundException caso o ficheiro não tenha sido encontrado
      * @throws NonComparableException caso o elemento a ser comparado , não seja
      * possível compará-lo
      * @throws IOException caso exista algum erro na escrita para ficheiro
      */
-    private OrderedListADT<InstanceTUI> loadPlayersRankingInfo(String path) throws FileNotFoundException,
+    private OrderedListADT<Instance> loadPlayersRankingInfo(String path) throws FileNotFoundException,
             NonComparableException, IOException {
         File file = new File(path);
-        OrderedListADT<InstanceTUI> newRank = new ArrayOrderedList<>();
+        OrderedListADT<Instance> newRank = new LinkedOrderedList<>();
         BufferedReader br = new BufferedReader(new FileReader(file));
         String st;
         br.readLine();
@@ -120,7 +119,7 @@ public class Files {
             playerScore = Long.parseLong(tempCharCount);
             mapName = st.substring(22 + playerName.length() + tempCharCount.length(), st.length());
 
-            InstanceTUI testInstance = new InstanceTUI(playerName, playerScore, mapName);
+            Instance testInstance = new Instance(playerName, playerScore, mapName);
             newRank.add(testInstance);
         }
         return newRank;
@@ -130,17 +129,17 @@ public class Files {
      * Método responsável por carregar um ficheiro de classificação consoante a
      * dificuldade que se quer usar
      *
-     * @param level nível do jogo
+     * @param level nível de dificuldade do jogo
      * @return lista ordenada da classificação do nível correspondente
      * @throws FileNotFoundException caso o ficheiro não tenha sido encontrado
      * @throws IOException caso exista algum erro na escrita para ficheiro
      * @throws NonComparableException caso o elemento a ser comparado , não seja
      * possível compará-lo
      */
-    public OrderedListADT<InstanceTUI> loadByDifficulty(short level) throws FileNotFoundException,
+    public OrderedListADT<Instance> loadByDifficulty(short level) throws FileNotFoundException,
             IOException, NonComparableException {
 
-        OrderedListADT<InstanceTUI> load = new ArrayOrderedList<>();
+        OrderedListADT<Instance> load = new LinkedOrderedList<>();
 
         switch (level) {
             case 1:

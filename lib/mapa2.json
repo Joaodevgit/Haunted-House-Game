@@ -1,0 +1,20 @@
+{
+	"nome": "casinha",
+	"pontos": 100,
+	"mapa":
+	[
+		{"aposento": "hall", "fantasma": 0, "ligacoes": ["entrada", "mini sala"]},
+		{"aposento": "cozinha", "fantasma": 0, "ligacoes": ["mini sala", "sala de jantar", "biblioteca", "corredor 1"]},
+		{"aposento": "mini sala", "fantasma": 0, "ligacoes": ["hall", "corredor 1", "cozinha"]},
+		{"aposento": "wc 1", "fantasma": 15, "ligacoes": ["corredor 1"]},
+		{"aposento": "sala de jantar", "fantasma": 15, "ligacoes": ["cozinha", "biblioteca"]},
+		{"aposento": "sala de estar", "fantasma": 25, "ligacoes": ["corredor 1", "corredor 2"]},
+		{"aposento": "quarto de hospedes", "fantasma": 0, "ligacoes": ["corredor 2"]},
+		{"aposento": "quarto", "fantasma": 20, "ligacoes": ["wc 2", "corredor 2"]},
+		{"aposento": "wc 2", "fantasma": 0, "ligacoes": ["quarto"]},
+		{"aposento": "corredor 1", "fantasma": 0, "ligacoes": ["mini sala", "cozinha", "wc 1", "sala de estar", "corredor 2"]},
+		{"aposento": "corredor 2", "fantasma": 0, "ligacoes": ["corredor 1", "quarto", "quarto de hospedes", "garagem", "sala de estar"]},
+		{"aposento": "biblioteca", "fantasma": 10, "ligacoes": ["cozinha", "sala de jantar"]},
+		{"aposento": "garagem", "fantasma": 25, "ligacoes": ["exterior", "corredor 2"]}
+	]
+} 

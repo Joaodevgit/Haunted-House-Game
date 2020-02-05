@@ -18,6 +18,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -35,6 +36,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 /**
  * <i>Graphical User Interface</i>
@@ -53,6 +55,7 @@ public class GUI implements ActionListener {
     private final JButton easy;
     private final JButton normal;
     private final JButton hard;
+    private JButton okSimulation;
     private JButton normalMode;
     private JButton simulationMode;
     private JButton close;
@@ -60,6 +63,8 @@ public class GUI implements ActionListener {
     private JButton levelChange;
     private JButton ok;
     private JButton okHighscore;
+    private JButton okDefeat;
+    private JButton okVictory;
     private JButton soundB;
     private JButton menuB;
     private JButton okGhost;
@@ -68,10 +73,13 @@ public class GUI implements ActionListener {
     private JFrame game;
     private JFrame player;
     private JFrame highscoreFrame;
-    private JFrame ghost;
+    private JFrame ghostFrame;
+    private JFrame simulationFrame;
+    private JFrame defeatFrame;
+    private JFrame victoryFrame;
+    private GamePane pane;
     private Clip clip;
 
-    //private OrderedListADT<Player> ranking;
     /**
      * <p>
      * <strong>Estado do programa</strong></p>
@@ -306,6 +314,15 @@ public class GUI implements ActionListener {
         }
     }
 
+    /**
+     * <p>Apresentação das classificações do melhores jogadores, em termos de pontuação, 
+     * de acordo com o nível de dificuldade atual. </p>
+     * <p>Este método carrega, de acordo com o nível de dificuldade da instância atual, 
+     * o ficheiro que contem as classificações a que corresponde os jogadores para esse nível.</p>
+     * 
+     * @throws IOException Erro na leitura do ficheiro de classificações
+     * @throws NonComparableException Objeto não comparável
+     */
     public void highscore() throws IOException, NonComparableException {
         this.blocked = true;
         
@@ -332,21 +349,20 @@ public class GUI implements ActionListener {
         
         //Add content to the frame
         int i = 0;
-        OrderedListADT<InstanceTUI> list = this.files.loadByDifficulty(this.instance.getLevel());
-        Iterator<InstanceTUI> iter = list.iterator();
+        OrderedListADT<Instance> list = this.files.loadByDifficulty(this.instance.getLevel());
+        Iterator<Instance> iter = list.iterator();
         panel1.setBackground(Color.BLACK);
         panel1.add(new JLabel("<html><strong><font color=\"white\">COLOCAÇÃO</font></strong></html>"));
         panel1.add(new JLabel("<html><strong><font color=\"white\">NOME</font></strong></html>"));
         panel1.add(new JLabel("<html><strong><font color=\"white\">PONTOS</font></strong></html>"));
         panel1.add(new JLabel("<html><strong><font color=\"white\">MAPA</font></strong></html>"));
         while (iter.hasNext() && i < 25) {
-            InstanceTUI instanceTUI = iter.next();
+            Instance instanceTemp = iter.next();
             int pos = ++i;
-            String line = "\n" + pos + "º   -   Nome: " + instanceTUI.getName() + "   -   Pontos: " + instanceTUI.getScore()+ "   -   Mapa: " + instanceTUI.getMapName() + "\n";
             panel1.add(new JLabel("<html><font color=\"white\">" + pos + "º " + "</font></html>"));
-            panel1.add(new JLabel("<html><font color=\"white\">" + instanceTUI.getName() + "</font></html>"));
-            panel1.add(new JLabel("<html><font color=\"white\">" + String.valueOf(instanceTUI.getScore() + "</font></html>")));
-            panel1.add(new JLabel("<html><font color=\"white\">" + instanceTUI.getMapName() + "</font></html>"));
+            panel1.add(new JLabel("<html><font color=\"white\">" + instanceTemp.getName() + "</font></html>"));
+            panel1.add(new JLabel("<html><font color=\"white\">" + String.valueOf(instanceTemp.getScore() + "</font></html>")));
+            panel1.add(new JLabel("<html><font color=\"white\">" + instanceTemp.getMapName() + "</font></html>"));
         }
         panel2.setBackground(Color.BLACK);
         panel2.add(this.okHighscore, BorderLayout.SOUTH);
@@ -385,82 +401,285 @@ public class GUI implements ActionListener {
     /**
      * Jogo em Modo Simulação.
      */
-    private void simulation() throws ElementNotFoundException, NonAvailablePath, EmptyCollectionException {
+    private void simulation() throws ElementNotFoundException, NonAvailablePath, EmptyCollectionException, IOException {
         this.blocked = true;
+
+        // Start the variables
+        this.simulationFrame = new JFrame("Simulação");
+        this.okSimulation = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/ok.png"))));
+        this.okSimulation.setBorderPainted(false);
+        this.okSimulation.setContentAreaFilled(false);
+        this.okSimulation.setMargin(new Insets(0, 0, 0, 0));
+        this.okSimulation.setOpaque(false);
+        JPanel geral = new JPanel();
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JPanel panel3 = new JPanel();
         
+        int cost = (int) this.map.shortestPathWeight(this.map.getEntranceRoom(), this.map.getBestExitRoom()) * this.instance.getLevel();
+        JLabel label1 = new JLabel("<html><font size=\"50\" color=\"white\">MODO SIMULAÇÃO</font></html>", SwingConstants.CENTER);
+        geral.setLayout(new BorderLayout(50, 50));
+        
+        //Layout config and Add content to panels
+        panel1.setLayout(new BorderLayout());
+        panel1.add(label1, BorderLayout.NORTH);
+        panel1.setBackground(Color.BLACK);
+        panel3.setLayout(new BorderLayout());
+
         Iterator<Room> iter = this.map.iteratorShortestPath(this.map.getEntranceRoom(), this.map.getBestExitRoom());
-        System.out.print("O caminho mais curto é: ");
+        String resultLifePoints = "O jogador perderia " + cost + " pontos de vida.</font></html>";
+        String resultPath = "<html><h1><font color=\"white\">";
         while (iter.hasNext()) {
             Room res = iter.next();
-            System.out.print(res.getName() + " ");
+            if (iter.hasNext()) {
+                resultPath += res.getName().toUpperCase() + " --> ";
+            } else {
+                resultPath += res.getName().toUpperCase();
+            }
         }
-        int points = (int) this.map.shortestPathWeight(this.map.getEntranceRoom(), this.map.getBestExitRoom()) * this.instance.getLevel();
-        System.out.println("O utilizador perderia: " + points + " pontos de vida");
+        resultPath += "<br/><br/>";
+        String def = resultPath.concat(resultLifePoints);
+        JLabel resultPointsLabel = new JLabel(def, SwingConstants.CENTER);
+        resultPointsLabel.setAlignmentY(java.awt.Component.CENTER_ALIGNMENT);
+        
+        panel3.add(resultPointsLabel);
+        panel3.setLocation(
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth(),
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight()
+        );
+        panel3.setBackground(Color.BLACK);
+        
+        panel2.setBackground(Color.BLACK);
+        panel2.add(this.okSimulation, BorderLayout.SOUTH);
+        
+        geral.add(panel1, BorderLayout.NORTH);
+        geral.add(panel2, BorderLayout.SOUTH);
+        geral.add(panel3, BorderLayout.CENTER);
+        geral.setBackground(Color.BLACK);
 
+        //Add content to the frame
+        this.simulationFrame.getContentPane().add(geral, BorderLayout.CENTER);
+
+        //Frame config
+        this.simulationFrame.setSize(
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth(),
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight()
+        );
+        this.simulationFrame.setLocationRelativeTo(null);
+        this.simulationFrame.setUndecorated(true);
+        this.simulationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.simulationFrame.setResizable(false);
+        this.simulationFrame.setVisible(true);
+
+        this.okSimulation.addActionListener(this);
+    }
+    
+    /**
+     * Apresentação do ecrã de derrota.
+     * 
+     * @throws IOException erro na leitura do ficheiro de imagem para o botão OK.
+     */
+    private void defeat() throws IOException {
+        //Start the variables
+        this.defeatFrame = new JFrame("Derrota");
+        this.okDefeat = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/ok.png"))));
+        this.okDefeat.setBorderPainted(false);
+        this.okDefeat.setContentAreaFilled(false);
+        this.okDefeat.setMargin(new Insets(0, 0, 0, 0));
+        this.okDefeat.setOpaque(false);
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JPanel panel3 = new JPanel();
+        JLabel label = new JLabel(new ImageIcon(ImageIO.read(
+                        new File("lib/images/defeatGhost.png")).getScaledInstance(GraphicsEnvironment.
+                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5 + 80, 
+                                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                                    getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT)));
+        JLabel label2 = new JLabel(
+                "<html>"
+                 + "<h1>"
+                     + "<font color=\"red\">DERROTA<br/></font>"
+                 + "</h1>"
+             + "</html>", SwingConstants.CENTER);
+        
+        //Layout config and Add content to panels
+        panel1.setLayout(new BorderLayout());
+        panel1.add(label2, BorderLayout.NORTH);
+        panel1.add(label, BorderLayout.SOUTH);
+        panel1.setBackground(Color.BLACK);
+        
+        panel2.add(new JLabel("<html><p><h2><font color=\"white\">Parece que foste derrotado...</p><br/><p>Tenta outra vez!</font></h2></p></html>"));
+        panel2.setBackground(Color.BLACK);
+        
+        panel3.add(this.okDefeat);
+        panel3.setBackground(Color.BLACK);
+        
+        //Add content to the frame
+        this.defeatFrame.getContentPane().add(panel1, BorderLayout.NORTH);
+        this.defeatFrame.getContentPane().add(panel2, BorderLayout.CENTER);
+        this.defeatFrame.getContentPane().add(panel3, BorderLayout.SOUTH);
+        
+        //Frame config
+        this.defeatFrame.setSize(
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth(), 
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight()
+        );
+        this.defeatFrame.setLocationRelativeTo(null);
+        this.defeatFrame.setUndecorated(true);
+        this.defeatFrame.setResizable(false);
+        this.defeatFrame.setVisible(true);
+        
+        //Action listener
+        this.okDefeat.addActionListener(this);
+    }
+    
+    /**
+     * Apresentação do ecrã de vitória.
+     * 
+     * @throws IOException erro na leitura de ficheiros
+     * @throws EmptyCollectionException coleção vazia
+     * @throws FileNotFoundException ficheiro não encontrado
+     * @throws NonComparableException objeto não comparável
+     */
+    private void victory() throws IOException, EmptyCollectionException, FileNotFoundException, NonComparableException {
+        //Start the variables
+        this.files.writePlayerRankingInfo(this.instance, this.map.getName());
+        this.victoryFrame = new JFrame("Vitoria");
+        this.okVictory = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/ok.png"))));
+        this.okVictory.setBorderPainted(false);
+        this.okVictory.setContentAreaFilled(false);
+        this.okVictory.setMargin(new Insets(0, 0, 0, 0));
+        this.okVictory.setOpaque(false);
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JPanel panel3 = new JPanel();
+        JLabel label = new JLabel(new ImageIcon(ImageIO.read(
+                        new File("lib/images/exitDoor.jpg")).getScaledInstance(GraphicsEnvironment.
+                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5, 
+                                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                                    getDisplayMode().getHeight() / 2+150, Image.SCALE_DEFAULT)));
+        JLabel label2 = new JLabel(
+                "<html>"
+                 + "<h1>"
+                     + "<font color=\"green\">VITORIA<br/></font>"
+                 + "</h1>"
+             + "</html>", SwingConstants.CENTER);
+        
+        //Layout config and Add content to panels
+        panel1.setLayout(new BorderLayout());
+        panel1.add(label2, BorderLayout.NORTH);
+        panel1.add(label, BorderLayout.SOUTH);
+        panel1.setBackground(Color.BLACK);
+        
+        panel2.add(new JLabel("<html><p><h2><font color=\"white\">Parabéns! Chegaste à saída.</p><br/><p>Acabaste o jogo com " + this.instance.getScore() + " pontos.</font></h2></p></html>"));
+        panel2.setBackground(Color.BLACK);
+        
+        panel3.add(this.okVictory);
+        panel3.setBackground(Color.BLACK);
+        
+        //Add content to the frame
+        this.victoryFrame.getContentPane().add(panel1, BorderLayout.NORTH);
+        this.victoryFrame.getContentPane().add(panel2, BorderLayout.CENTER);
+        this.victoryFrame.getContentPane().add(panel3, BorderLayout.SOUTH);
+        
+        //Frame config
+        this.victoryFrame.setSize(
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth(),
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight()
+        );
+        this.victoryFrame.setLocationRelativeTo(null);
+        this.victoryFrame.setUndecorated(true);
+        this.victoryFrame.setResizable(false);
+        this.victoryFrame.setVisible(true);
+        
+        //Action listener
+        this.okVictory.addActionListener(this);
     }
 
     /**
      * Jogo em Modo Normal.
      */
-    private void normal() throws LineUnavailableException, IOException, UnsupportedAudioFileException, ElementNotFoundException {
-        this.game = new JFrame("Casa Assombrada");
-        this.menuB = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/menu.png"))));
-        this.menuB.setBorderPainted(false);
-        this.menuB.setContentAreaFilled(false);
-        this.menuB.setMargin(new Insets(0, 0, 0, 0));
-        this.menuB.setOpaque(false);
-        JPanel panel = new JPanel(new GridBagLayout());
-        JPanel panel2 = new JPanel(new BorderLayout(0, -30));
-        GridBagConstraints gbc = new GridBagConstraints();
-        
-        this.points = new JLabel("<html><h1><font color=\"white\">PONTOS: " + this.instance.getScore() + "</font></h1></html>");
-        this.pos = new JLabel("<html><h3><font color=\"white\">APOSENTO ATUAL: " + this.instance.getPos().getName().toUpperCase() + "</font></h3></html>");
-        
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1;
-        gbc.gridwidth = GridBagConstraints.REMAINDER;
-        gbc.anchor = GridBagConstraints.NORTH;
-        
-        panel.add(this.points, gbc);
-        gbc.gridy = 1;
-        panel.add(this.pos, gbc);
-        panel.setBackground(Color.BLACK);
-        
-        panel2.add(this.soundB);
-        panel2.add(this.menuB);
-        
-        panel2.add(panel, BorderLayout.NORTH);
-        panel2.setBackground(Color.BLACK);
-        this.game.add(panel2, BorderLayout.EAST);
-        this.game.add(new GamePane());
-        
-        //Configuring audio
-        this.clip = AudioSystem.getClip();
-        AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/sounds/gamemusic.wav"));
-        this.clip.open(inputStream);
-        if (this.sound) {
-            this.clip.start();
+    private void normal(boolean first) throws LineUnavailableException, IOException, UnsupportedAudioFileException, ElementNotFoundException, FileNotFoundException, EmptyCollectionException, NonComparableException {
+        if (first) {
+            this.instance.setPos(this.map.getEntranceRoom());
+            this.instance.setScore(this.map.getPoints());
+            this.game = new JFrame("Casa Assombrada");
+            this.menuB = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/menu.png"))));
+            this.menuB.setBorderPainted(false);
+            this.menuB.setContentAreaFilled(false);
+            this.menuB.setMargin(new Insets(0, 0, 0, 0));
+            this.menuB.setOpaque(false);
+            JPanel panel = new JPanel(new GridBagLayout());
+            JPanel panel2 = new JPanel(new BorderLayout(0, -30));
+            GridBagConstraints gbc = new GridBagConstraints();
+
+            this.points = new JLabel("<html><h1><font color=\"white\">PONTOS: " + this.instance.getScore() + "</font></h1></html>");
+            this.pos = new JLabel("<html><h3><font color=\"white\">APOSENTO ATUAL: " + this.instance.getPos().getName().toUpperCase() + "</font></h3></html>");
+
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.weightx = 1;
+            gbc.gridwidth = GridBagConstraints.REMAINDER;
+            gbc.anchor = GridBagConstraints.NORTH;
+
+            panel.add(this.points, gbc);
+            gbc.gridy = 1;
+            panel.add(this.pos, gbc);
+            panel.setBackground(Color.BLACK);
+            this.pane = new GamePane();
+            panel2.add(this.menuB);
+
+            panel2.add(panel, BorderLayout.NORTH);
+            panel2.setBackground(Color.BLACK);
+            this.game.add(panel2, BorderLayout.EAST);
+            
+            //Configuring audio
+            this.clip = AudioSystem.getClip();
+            AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File("lib/sounds/gamemusic.wav"));
+            this.clip.open(inputStream);
+            if (this.sound) {
+                this.clip.start();
+            }
+            
+            //Configuring the frame
+            this.game.setUndecorated(true);
+            this.game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            this.game.setResizable(false);
+            this.game.setSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                    getDisplayMode().getWidth(), GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                            getDisplayMode().getHeight());
+            this.game.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            this.game.setLocationRelativeTo(null);
+            this.game.setVisible(true);
+
+            this.menuB.addActionListener(this);
+        } else {
+            if (this.instance.getScore() == 0) {
+                this.defeat();
+                return;
+            } else if (this.instance.getPos().getType() == -1) {
+                this.victory();
+                return;
+            }
+            this.game.remove(this.pane);
+            this.pane = new GamePane();
         }
-        
-        //Configuring the frame
-        this.game.setUndecorated(true);
-        this.game.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.game.setResizable(false);
-        this.game.setSize(GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
-                getDisplayMode().getWidth(), GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
-                        getDisplayMode().getHeight());
-        this.game.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        this.game.setLocationRelativeTo(null);
-        this.game.setVisible(true);
-        
-        this.soundB.addActionListener(this);
-        this.menuB.addActionListener(this);
+        this.game.add(this.pane);
     }
     
+    /**
+     * Classe que estrutura visualmente o jogo.
+     */
     class GamePane extends JPanel implements ActionListener {
-        JButton[] doors;
-        UnorderedListADT<Room> rooms;
+        
+        private JButton[] doors;
+        private UnorderedListADT<Room> rooms;
                 
+        /**
+         * Construtor para a classe que estrutura visualmente o jogo.
+         * 
+         * @throws IOException
+         * @throws ElementNotFoundException 
+         */
         public GamePane() throws IOException, ElementNotFoundException {
             setLayout(new BorderLayout());
             JPanel panel = new JPanel();
@@ -482,7 +701,7 @@ public class GUI implements ActionListener {
             while (i < this.rooms.size()) {
                 this.doors[i] = this.makeButton(new JButton(new ImageIcon(ImageIO.read(
                         new File("lib/images/closedDoor.png")).getScaledInstance(GraphicsEnvironment.
-                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5, 
+                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 8, 
                                 GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
                                     getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT))));
                 panel.add(this.doors[i]);
@@ -509,6 +728,11 @@ public class GUI implements ActionListener {
             return btn;
         }
 
+        /**
+         * Define o que sucede após um determinado evento.
+         * 
+         * @param ev evento
+         */
         @Override
         public void actionPerformed(ActionEvent ev) {
             try {
@@ -528,19 +752,41 @@ public class GUI implements ActionListener {
                     iter.next();
                     iter.next();
                     room = iter.next();
+                } else if (ev.getSource().equals(this.doors[4])) {
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    room = iter.next();
+                } else if (ev.getSource().equals(this.doors[5])) {
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    room = iter.next();
+                } else if (ev.getSource().equals(this.doors[6])) {
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    room = iter.next();
                 }
                 long remove = GUI.this.instance.getScore() - (GUI.this.map.getEdgeWeight(GUI.this.instance.getPos().getName(), room.getName()) * GUI.this.instance.getLevel());
+                long previous = GUI.this.instance.getScore();
                 if (remove < 0)
                     remove = 0;
-                if (GUI.this.instance.getScore() != remove)
-                    GUI.this.ghost(GUI.this.map.getEdgeWeight(GUI.this.instance.getPos().getName(), room.getName()) * GUI.this.instance.getLevel());
+                
                 GUI.this.instance.setScore(remove);
-                GUI.this.instance.setPos(room);
+                if (GUI.this.instance.getScore() != previous && GUI.this.instance.getScore() != 0 && room.getType() != -1)
+                    GUI.this.ghost(GUI.this.map.getEdgeWeight(GUI.this.instance.getPos().getName(), room.getName()) * GUI.this.instance.getLevel());
                 GUI.this.points.setText("<html><h1><font color=\"white\">PONTOS: " + GUI.this.instance.getScore() + "</font></h1></html>");
+                GUI.this.instance.setPos(room);
                 GUI.this.pos.setText("<html><h3><font color=\"white\">APOSENTO ATUAL: " + GUI.this.instance.getPos().getName().toUpperCase() + "</font></h3></html>");
-            } catch (ElementNotFoundException ex) {
-                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (IOException ex) {
+                GUI.this.normal(false);
+            } catch (ElementNotFoundException | IOException | LineUnavailableException | UnsupportedAudioFileException | EmptyCollectionException | NonComparableException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
@@ -554,7 +800,7 @@ public class GUI implements ActionListener {
      */
     private void ghost(long points) throws IOException {
         //Start the variables
-        this.ghost = new JFrame("Fantasma");
+        this.ghostFrame = new JFrame("Fantasma");
         this.okGhost = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/ok.png"))));
         this.okGhost.setBorderPainted(false);
         this.okGhost.setContentAreaFilled(false);
@@ -564,37 +810,43 @@ public class GUI implements ActionListener {
         JPanel panel2 = new JPanel();
         JPanel panel3 = new JPanel();
         JLabel label = new JLabel(new ImageIcon(ImageIO.read(
-                        new File("lib/images/ghost.png")).getScaledInstance(GraphicsEnvironment.
+                        new File("lib/images/ghostroom.jpg")).getScaledInstance(GraphicsEnvironment.
                             getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5, 
                                 GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
                                     getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT)));
+        JLabel label2 = new JLabel(
+                "<html>"
+                 + "<h1>"
+                     + "<font color=\"white\">FANTASMA ENCONTRADO!!!<br/></font>"
+                 + "</h1>"
+             + "</html>", SwingConstants.CENTER);
         
         //Layout config and Add content to panels
         panel1.setLayout(new BorderLayout());
-        panel1.add(new JLabel("<html><h1><font color=\"white\">FANTASMA ENCONTRADO!!!</font></h3></html>"), BorderLayout.NORTH);
+        panel1.add(label2, BorderLayout.NORTH);
         panel1.add(label, BorderLayout.SOUTH);
         panel1.setBackground(Color.BLACK);
         
-        panel2.add(new JLabel("<html><h3><font color=\"white\">Ups! Encontraste um fantasma... Perdeste " + points + "pontos</font></h3></html>"));
+        panel2.add(new JLabel("<html><p><h2><font color=\"white\">Ups! Encontraste um fantasma...</p><br/><p>Perdeste " + points + " pontos</font></h2></p></html>"));
         panel2.setBackground(Color.BLACK);
         
         panel3.add(this.okGhost);
         panel3.setBackground(Color.BLACK);
         
         //Add content to the frame
-        this.ghost.getContentPane().add(panel1, BorderLayout.NORTH);
-        this.ghost.getContentPane().add(panel2, BorderLayout.CENTER);
-        this.ghost.getContentPane().add(panel3, BorderLayout.SOUTH);
+        this.ghostFrame.getContentPane().add(panel1, BorderLayout.NORTH);
+        this.ghostFrame.getContentPane().add(panel2, BorderLayout.CENTER);
+        this.ghostFrame.getContentPane().add(panel3, BorderLayout.SOUTH);
         
         //Frame config
-        this.ghost.setSize(
+        this.ghostFrame.setSize(
                 GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth()/* - 500*/, 
                 GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight()/* - 200*/
         );
-        this.ghost.setLocationRelativeTo(null);
-        this.ghost.setUndecorated(true);
-        this.ghost.setResizable(false);
-        this.ghost.setVisible(true);
+        this.ghostFrame.setLocationRelativeTo(null);
+        this.ghostFrame.setUndecorated(true);
+        this.ghostFrame.setResizable(false);
+        this.ghostFrame.setVisible(true);
         
         //Action listener
         this.okGhost.addActionListener(this);
@@ -667,6 +919,9 @@ public class GUI implements ActionListener {
         } else if (ev.getSource().equals(this.okHighscore)) {
             this.highscoreFrame.dispose();
             this.blocked = false;
+        } else if (ev.getSource().equals(this.okSimulation)) {
+            this.simulationFrame.dispose();
+            this.blocked = false;
         } else if (ev.getSource().equals(this.close) && !this.blocked) {
             System.exit(0);
         } else if (ev.getSource().equals(this.levelChange) && !this.blocked) {
@@ -681,14 +936,18 @@ public class GUI implements ActionListener {
             this.clip.stop();
             this.game.dispose();
             try {
-                this.normal();
+                this.normal(true);
             } catch (LineUnavailableException | IOException | UnsupportedAudioFileException | ElementNotFoundException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (EmptyCollectionException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (NonComparableException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (ev.getSource().equals(this.simulationMode) && !this.blocked) {
             try {
                 this.simulation();
-            } catch (ElementNotFoundException | NonAvailablePath | EmptyCollectionException ex) {
+            } catch (ElementNotFoundException | NonAvailablePath | EmptyCollectionException | IOException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (ev.getSource().equals(this.soundB) && !this.blocked) {
@@ -702,7 +961,23 @@ public class GUI implements ActionListener {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (ev.getSource().equals(this.okGhost)) {
-            this.ghost.dispose();
+            this.ghostFrame.dispose();
+        } else if (ev.getSource().equals(this.okDefeat)) {
+            this.defeatFrame.dispose();
+            this.game.dispose();
+            try {
+                this.mainMenu();
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else if (ev.getSource().equals(this.okVictory)) {
+            this.victoryFrame.dispose();
+            this.game.dispose();
+            try {
+                this.mainMenu();
+            } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 }

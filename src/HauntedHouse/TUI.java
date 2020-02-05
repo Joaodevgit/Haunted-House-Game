@@ -1,7 +1,6 @@
 package HauntedHouse;
 
 import ed.adt.OrderedListADT;
-import ed.adt.UnorderedListADT;
 import ed.exceptions.ElementNotFoundException;
 import ed.exceptions.EmptyCollectionException;
 import ed.exceptions.NonComparableException;
@@ -11,14 +10,23 @@ import java.util.Iterator;
 import java.util.Scanner;
 
 /**
- * @author Francisco Spínola
+ * <i>Text User Interface</i>
+ *
  * @author João Pereira
+ * @author Francisco Spínola
+ * @deprecated Deixou de ser utiilizado desde que foi criada a <code>GUI</code>. Está incompleta.
+ * @see GUI
  */
 public class TUI {
     
     private InstanceTUI instance;
     private Files files;
     
+    /**
+     * Criação da <code>TUI</code>
+     * 
+     * @param map mapa do jogo
+     */
     public TUI(Map map) throws ElementNotFoundException, EmptyCollectionException, IOException, 
             FileNotFoundException, NonComparableException {
         this.instance = new InstanceTUI(this, map.getPoints(), (Room) map.getEntranceRoom());
@@ -26,6 +34,11 @@ public class TUI {
         this.MainMenu(map);
     }
     
+    /**
+     * Apresenta o menu principal do jogo.
+     * 
+     * @param map mapa do jogo
+     */
     private void MainMenu(Map map) throws ElementNotFoundException, IOException, EmptyCollectionException, FileNotFoundException, NonComparableException {
         Scanner sc = new Scanner(System.in);
         int o;
@@ -68,6 +81,12 @@ public class TUI {
         } while (o != 0);
     }
 
+    /**
+     * Apresenta visualmente o menu principal.
+     * 
+     * @param name nome do jogador
+     * @param difficulty nível de dificuldade do jogador
+     */
     private void Screen_MainMenu(String name, String difficulty) {
         System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
@@ -86,6 +105,9 @@ public class TUI {
         System.out.println("|__________________________________________________________________|");
     }
 
+    /**
+     * Apresenta ecrã de escolha de dificuldade.
+     */
     protected void Screen_DifficultyChoice() {
         System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
@@ -98,6 +120,9 @@ public class TUI {
         System.out.println("|__________________________________________________________________|");
     }
 
+    /**
+     * Escolha de visualização das classificações dos jogadores, de acordo com um determinado nível de dificuldade.
+     */
     protected void Screen_RankingChoice() {
         System.out.println(" __________________________________________________________________");
         System.out.println("|                                                                  |");
@@ -111,6 +136,12 @@ public class TUI {
         System.out.println("|__________________________________________________________________|");
     }
 
+    /**
+     * Representa em String o nível de dificuldade passado por argumento.
+     * 
+     * @param difficultyNumber nível de dificuldade
+     * @return representação em String do nível de dificuldade
+     */
     private String getDifficulty(int difficultyNumber) {
         String difficulty;
         switch (difficultyNumber) {
@@ -130,6 +161,9 @@ public class TUI {
         return difficulty;
     }
 
+    /**
+     * Apresenta visualmente a secção do programa onde este pede ao jogador para introduzir o seu nome.
+     */
     protected void Screen_PlayerName() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
@@ -138,13 +172,9 @@ public class TUI {
         System.out.println("Nome do jogador: ");
     }
 
-    private void Screen_LoadMap() {
-        System.out.println(" _________________________________________________________________");
-        System.out.println("|                                                                 |");
-        System.out.println("|                 Mapa carregado com sucesso!                     |");
-        System.out.println("|_________________________________________________________________|");
-    }
-
+    /**
+     * Representa o jogo em modo simulação.
+     */
     private void Screen_SimulationGameMode() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
@@ -152,6 +182,9 @@ public class TUI {
         System.out.println("|_________________________________________________________________|");
     }
 
+    /**
+     * Representa o início de um jogo em modo normal.
+     */
     private void Screen_NormalGameMode() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
@@ -159,23 +192,29 @@ public class TUI {
         System.out.println("|_________________________________________________________________|");
     }
 
+    /**
+     * Demonstra parte do ecrã das classificações do mapa
+     */
     private void Screen_MapRanking() throws FileNotFoundException, IOException, NonComparableException {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
         System.out.println("|                       Classficação do mapa                       |");
         System.out.println("|__________________________________________________________________|");
-        OrderedListADT<InstanceTUI> rankings = this.files.loadByDifficulty((short)this.instance.getLevel());
-        Iterator<InstanceTUI> iter = rankings.iterator();
+        OrderedListADT<Instance> rankings = this.files.loadByDifficulty((short)this.instance.getLevel());
+        Iterator<Instance> iter = rankings.iterator();
         int count = 0;
         while (iter.hasNext() && count < 10) {
             int pos = count+1;
-            InstanceTUI instance = iter.next();
+            Instance instance = iter.next();
             System.out.println(pos + "º  -  " + instance.getName() + "  -  " + instance.getScore());
             count++;
         }
         pressEnter();
     }
 
+    /**
+     * Apresenta parte do ecrã das classificações dos jogadores.
+     */
     protected void Screen_PlayerInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                 |");
@@ -183,6 +222,9 @@ public class TUI {
         System.out.println("|_________________________________________________________________|");
     }
 
+    /**
+     * Apresenta o ecrã de derrota.
+     */
     protected void Screen_DeadInfo() {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
@@ -191,6 +233,11 @@ public class TUI {
         pressEnter();
     }
 
+    /**
+     * Apresenta o ecrã de vitória.
+     * 
+     * @param instance instância atual do jogo
+     */
     protected void Screen_VictoryInfo(InstanceTUI instance) {
         System.out.println(" _________________________________________________________________");
         System.out.println("|                                                                  |");
@@ -200,6 +247,9 @@ public class TUI {
         pressEnter();
     }
 
+    /**
+     * Pede ao utilizador que pressione Enter para continuar o programa.
+     */
     private void pressEnter() {
         System.out.println("\nPressione Enter para continuar...");
         new Scanner(System.in).nextLine();

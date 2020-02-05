@@ -22,7 +22,7 @@ import org.json.simple.parser.ParseException;
  * JSON, que contem as informações relativas a este.</p>
  * <p>
  * É uma rede direcionada devido ao peso, que neste caso é atribuído pelos
- * pontos por que fantasma, por aposento, é valorizado.</p>
+ * pontos por que cada fantasma, por aposento, é valorizado.</p>
  *
  * @author Francisco Spínola
  * @author João Pereira
@@ -39,7 +39,8 @@ public class Map<T> extends DirectedNetwork<T> {
      * <p>
      * Instancia também a rede direcionada com nós que simbolizam cada
      * aposento.</p>
-     * @param path caminho para o mapa
+     * 
+     * @param path caminho para o ficheiro do mapa
      */
     public Map(String path) throws ElementNotFoundException, FileNotFoundException, IOException, ParseException {
         super();
@@ -62,7 +63,7 @@ public class Map<T> extends DirectedNetwork<T> {
             roomobj = (JSONObject) rooms.get(i);
             Room room = new Room();
             room.setName((String) roomobj.get("aposento"));
-            this.addVertex((T) room);
+            super.addVertex((T) room);
             i++;
         }
 
@@ -123,7 +124,7 @@ public class Map<T> extends DirectedNetwork<T> {
     }
 
     /**
-     * Método responsável por retornar o aposento de entrada
+     * Método responsável por retornar o aposento de entrada.
      *
      * @return aposento de entrada
      * @throws ElementNotFoundException exceção lançada caso não exista um
@@ -166,7 +167,7 @@ public class Map<T> extends DirectedNetwork<T> {
     }
 
     /**
-     * Método responsável por retornar o custo entre 2 aposentos
+     * Método responsável por retornar o custo entre 2 aposentos.
      *
      * @param srcEdge aposento de origem
      * @param destEdge aposento de destino
@@ -181,7 +182,7 @@ public class Map<T> extends DirectedNetwork<T> {
     }
     
     /**
-     * Método responsável por retornar uma lista não ordenada de aposentos de saída
+     * Responsável por retornar uma lista não ordenada de aposentos de saída.
      *
      * @return lista não ordenada de aposentos de saída
      */
@@ -197,7 +198,8 @@ public class Map<T> extends DirectedNetwork<T> {
     }
     
     /**
-     * Método responsável por retornar o melhor aposento de saída para ser usado para a simulação
+     * Responsável por retornar o melhor aposento de saída para ser usado para a simulação.
+     * 
      * @return melhor aposento de saída
      * @throws ElementNotFoundException caso o aposento não seja encontrado
      * @throws NonAvailablePath caso não exista um caminho
@@ -230,7 +232,7 @@ public class Map<T> extends DirectedNetwork<T> {
 
     /**
      * Método responsável por retornar uma lista não ordenada de aposentos que
-     * têm ligação com o aposento a ser passado por parâmetro
+     * têm ligação com o aposento a ser passado por parâmetro.
      *
      * @param name nome do aposento que se pretende obter as ligações com outros
      * aposentos
@@ -250,11 +252,12 @@ public class Map<T> extends DirectedNetwork<T> {
     }
 
     /**
-     * Método responsável por
+     * Lista as opções de escolha dos aposentos que se encontram ligados a um determinado aposento.
      *
-     * @param room
-     * @return
-     * @throws ElementNotFoundException
+     * @param room aposento a verificar ligações
+     * @return lista de opções
+     * @throws ElementNotFoundException aposento não encontrado
+     * @deprecated era usado apenas em modo <code>TUI</code>
      */
     public ArrayUnorderedList<T> printCommonRooms(Room room) throws ElementNotFoundException {
         ArrayUnorderedList<T> rooms = getRoomEdges(room.getName());
@@ -273,8 +276,7 @@ public class Map<T> extends DirectedNetwork<T> {
     }
 
     /**
-     * Método responsável por retornar o aposento em comum escolhido pelo
-     * utilizador
+     * Método responsável por retornar o aposento escolhido pelo utilizador.
      *
      * @param room aposento a ser procurado na lista não ordenada
      * @param option opção que o utilizador escolheu
@@ -282,6 +284,7 @@ public class Map<T> extends DirectedNetwork<T> {
      * @throws ElementNotFoundException caso o aposento não exista
      * @throws ArrayIndexOutOfBoundsException caso o nº de option esteja fora do
      * intervalo
+     * @deprecated era usado apenas em modo <code>TUI</code>.
      */
     public T findCommonRoom(Room room, int option) throws ElementNotFoundException, ArrayIndexOutOfBoundsException {
 
@@ -299,12 +302,13 @@ public class Map<T> extends DirectedNetwork<T> {
     }
 
     /**
-     * Método responsávelo por simular o modo de jogo "Normal"
+     * Método responsávelo por simular o modo de jogo "Normal".
      *
-     * @param instance
+     * @param instance instância atual do jogo
      * @throws ElementNotFoundException caso o aposento não seja encontrado
      * @return -1 if the player choosed to exit early in the game, 0 if the
      * player lost the game and 1 if he won.
+     * @deprecated era usado apenas em modo <code>TUI</code>
      */
     public short menuModoNormal(InstanceTUI instance) throws ElementNotFoundException {
         Scanner sc = new Scanner(System.in);
@@ -349,27 +353,5 @@ public class Map<T> extends DirectedNetwork<T> {
         else {
             return 1;
         }
-    }
-
-    @Override
-    public String toString() {
-        String s = "";
-        for (int i = 0; i < this.numVertices; i++) {
-            s += this.vertices[i] + "\t\t";
-        }
-        s += "\n";
-
-        for (int i = 0; i < this.numVertices; i++) {
-            for (int j = 0; j < this.numVertices; j++) {
-                if (this.adjMatrix[i][j] == Double.POSITIVE_INFINITY) {
-                    s += this.adjMatrix[i][j] + "\t";
-                } else {
-                    s += this.adjMatrix[i][j] + "\t\t";
-                }
-            }
-            s += this.vertices[i];
-            s += "\n";
-        }
-        return s;
     }
 }

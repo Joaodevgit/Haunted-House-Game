@@ -233,3 +233,7 @@ O que fazer para o próximo commit:
 - Alterar o conteúdo dos catch de todos os try, para que o desenvolvedor perceba o porquê e onde foi lançada a exceção
 
 --------------------------------------------------------------------------------------------------------
+
+05/02/2020 23:50 Francisco Spínola: "Final"
+
+Projeto finalizado.

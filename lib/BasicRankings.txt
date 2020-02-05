@@ -1,2 +1,3 @@
 -----------Nível Básico-----------
 Jogador:hackerredes|Pontos:80|Mapa:sexta-feira 13
+Jogador:e|Pontos:70|Mapa:sexta-feira 13

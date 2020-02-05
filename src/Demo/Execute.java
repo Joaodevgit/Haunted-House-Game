@@ -11,6 +11,7 @@ import org.json.simple.parser.ParseException;
  * Classe que executa o programa.
  *
  * @author Francisco Spínola
+ * @author João Pereira
  */
 public class Execute {
 
