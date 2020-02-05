@@ -1,6 +1,9 @@
 package HauntedHouse;
 
+import ed.adt.UnorderedListADT;
 import ed.exceptions.ElementNotFoundException;
+import ed.exceptions.EmptyCollectionException;
+import ed.exceptions.NonAvailablePath;
 import ed.util.ArrayUnorderedList;
 import ed.util.matrixGraph.DirectedNetwork;
 import java.io.FileNotFoundException;
@@ -175,6 +178,54 @@ public class Map<T> extends DirectedNetwork<T> {
         int destPos = findRoom(destEdge);
 
         return (long) super.adjMatrix[srcPos][destPos];
+    }
+    
+    /**
+     * Método responsável por retornar uma lista não ordenada de aposentos de saída
+     *
+     * @return lista não ordenada de aposentos de saída
+     */
+    public UnorderedListADT<T> getExitRooms() {
+        UnorderedListADT<T> exitRooms = new ArrayUnorderedList<>();
+
+        for (int i = 0; i < super.numVertices; i++) {
+            if (((Room) super.vertices[i]).getType() == -1) {
+                exitRooms.addToRear(super.vertices[i]);
+            }
+        }
+        return exitRooms;
+    }
+    
+    /**
+     * Método responsável por retornar o melhor aposento de saída para ser usado para a simulação
+     * @return melhor aposento de saída
+     * @throws ElementNotFoundException caso o aposento não seja encontrado
+     * @throws NonAvailablePath caso não exista um caminho
+     * @throws EmptyCollectionException caso a coleção esteja vazia
+     */
+    public T getBestExitRoom() throws ElementNotFoundException, NonAvailablePath, EmptyCollectionException {
+        T entranceRoom = getEntranceRoom();
+        T bestExitRoom = null;
+        int count = 0;
+        int lowestSteps = Integer.MAX_VALUE;
+        double lowest = Double.MAX_VALUE;
+        Iterator<T> iterCosts = getExitRooms().iterator();
+        while (iterCosts.hasNext()) {
+            T currentExitRoom = iterCosts.next();
+            double currentMinCost = super.shortestPathWeight(entranceRoom, currentExitRoom);
+            Iterator<Room> iterPath = super.iteratorShortestPath(entranceRoom, currentExitRoom);
+            while (iterPath.hasNext()) {
+                count++;
+                iterPath.next();
+            }
+            if (currentMinCost < lowest && count < lowestSteps) {
+                lowest = currentMinCost;
+                lowestSteps = count;
+                bestExitRoom = currentExitRoom;
+            }
+            count = 0;
+        }
+        return bestExitRoom;
     }
 
     /**

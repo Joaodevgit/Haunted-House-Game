@@ -3,6 +3,8 @@ package HauntedHouse;
 import ed.adt.OrderedListADT;
 import ed.adt.UnorderedListADT;
 import ed.exceptions.ElementNotFoundException;
+import ed.exceptions.EmptyCollectionException;
+import ed.exceptions.NonAvailablePath;
 import ed.exceptions.NonComparableException;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -26,7 +28,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -58,14 +59,16 @@ public class GUI implements ActionListener {
     private JButton highscore;
     private JButton levelChange;
     private JButton ok;
+    private JButton okHighscore;
     private JButton soundB;
     private JButton menuB;
-    private JButton OK;
+    private JButton okGhost;
     private JTextField playerName = new JTextField(3);
     private JFrame level;
     private JFrame game;
     private JFrame player;
     private JFrame highscoreFrame;
+    private JFrame ghost;
     private Clip clip;
 
     //private OrderedListADT<Player> ranking;
@@ -321,11 +324,11 @@ public class GUI implements ActionListener {
                             getScaledInstance(this.highscoreFrame.getWidth(), this.highscoreFrame.getHeight(), Image.SCALE_DEFAULT)));
 
         //Button config
-        this.OK = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/ok.png"))));
-        this.OK.setBorderPainted(false);
-        this.OK.setContentAreaFilled(false);
-        this.OK.setMargin(new Insets(0, 0, 0, 0));
-        this.OK.setOpaque(false);
+        this.okHighscore = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/ok.png"))));
+        this.okHighscore.setBorderPainted(false);
+        this.okHighscore.setContentAreaFilled(false);
+        this.okHighscore.setMargin(new Insets(0, 0, 0, 0));
+        this.okHighscore.setOpaque(false);
         
         //Add content to the frame
         int i = 0;
@@ -346,7 +349,7 @@ public class GUI implements ActionListener {
             panel1.add(new JLabel("<html><font color=\"white\">" + instanceTUI.getMapName() + "</font></html>"));
         }
         panel2.setBackground(Color.BLACK);
-        panel2.add(this.OK, BorderLayout.SOUTH);
+        panel2.add(this.okHighscore, BorderLayout.SOUTH);
         String levelS;
         switch (this.instance.getLevel()) {
             case 1:
@@ -376,14 +379,24 @@ public class GUI implements ActionListener {
         this.highscoreFrame.setVisible(true);
         
         //Action listeners
-        this.OK.addActionListener(this);
+        this.okHighscore.addActionListener(this);
     }
     
     /**
      * Jogo em Modo Simulação.
      */
-    private void simulation() {
+    private void simulation() throws ElementNotFoundException, NonAvailablePath, EmptyCollectionException {
+        this.blocked = true;
         
+        Iterator<Room> iter = this.map.iteratorShortestPath(this.map.getEntranceRoom(), this.map.getBestExitRoom());
+        System.out.print("O caminho mais curto é: ");
+        while (iter.hasNext()) {
+            Room res = iter.next();
+            System.out.print(res.getName() + " ");
+        }
+        int points = (int) this.map.shortestPathWeight(this.map.getEntranceRoom(), this.map.getBestExitRoom()) * this.instance.getLevel();
+        System.out.println("O utilizador perderia: " + points + " pontos de vida");
+
     }
 
     /**
@@ -444,66 +457,36 @@ public class GUI implements ActionListener {
         this.menuB.addActionListener(this);
     }
     
-    class GamePane extends JPanel {
+    class GamePane extends JPanel implements ActionListener {
+        JButton[] doors;
+        UnorderedListADT<Room> rooms;
+                
         public GamePane() throws IOException, ElementNotFoundException {
             setLayout(new BorderLayout());
-            /*
-            JPanel panel = new JPanel();
-            panel.setLayout(new BorderLayout(15, 15));
-            
-            JPanel doors = new JPanel(new GridBagLayout());
-            JPanel text = new JPanel(new GridBagLayout());
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.weightx = 1;
-            gbc.gridwidth = GridBagConstraints.REMAINDER;
-            gbc.anchor = GridBagConstraints.NORTH;
-            
-            UnorderedListADT<Room> rooms = GUI.this.map.getRoomEdges(GUI.this.instance.getPos().getName());
-            Iterator<Room> iter = rooms.iterator();
-//            while (iter.hasNext()) {
-//                doors.add(new JLabel("<html><h1><strong><font color=\"white\">" + iter.next().getName().toUpperCase() + "</font></strong></h1></html>"), gbc);
-//            }
-            int i = 0;
-            while (i < rooms.size()) {
-                gbc.anchor = GridBagConstraints.NORTH;
-                text.add(new JLabel("<html><h1><strong><font color=\"red\">" + iter.next().getName().toUpperCase() + "</font></strong></h1></html>"));
-                gbc.anchor = GridBagConstraints.SOUTH;
-                doors.add(this.makeButton(new JButton(new ImageIcon(ImageIO.read(
-                        new File("lib/images/closedDoor.png")).getScaledInstance(GraphicsEnvironment.
-                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5, 
-                                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
-                                    getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT)))));
-                i++;
-            }
-            doors.setBackground(Color.BLACK);
-            
-            panel.add(text, BorderLayout.NORTH);
-            panel.add(doors, BorderLayout.SOUTH);
-            
-            add(panel, BorderLayout.SOUTH);
-            */
-            
             JPanel panel = new JPanel();
             JPanel panel2 = new JPanel();
             panel2.setLayout(new BorderLayout());
             panel2.add(new JLabel(new ImageIcon("lib/images/ok.png")));
             
-            UnorderedListADT<Room> rooms = GUI.this.map.getRoomEdges(GUI.this.instance.getPos().getName());
-            Iterator<Room> iter = rooms.iterator();
-            panel.setLayout(new GridLayout(2, rooms.size(), 20, 20));
+            this.rooms = GUI.this.map.getRoomEdges(GUI.this.instance.getPos().getName());
+            Iterator<Room> iter = this.rooms.iterator();
+            panel.setLayout(new GridLayout(2, this.rooms.size(), 20, 20));
             while (iter.hasNext()) {
                 JLabel jlabel = new JLabel("<html><h1><strong><font color=\"white\">" + iter.next().getName().toUpperCase() + "</font></strong></h1></html>", (int)JLabel.CENTER_ALIGNMENT);
                 panel.add(jlabel);
             }
             
+            this.doors = new JButton[this.rooms.size()];
+            
             int i = 0;
-            while (i < rooms.size()) {
-                panel.add(this.makeButton(new JButton(new ImageIcon(ImageIO.read(
+            while (i < this.rooms.size()) {
+                this.doors[i] = this.makeButton(new JButton(new ImageIcon(ImageIO.read(
                         new File("lib/images/closedDoor.png")).getScaledInstance(GraphicsEnvironment.
                             getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5, 
                                 GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
-                                    getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT)))));
+                                    getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT))));
+                panel.add(this.doors[i]);
+                this.doors[i].addActionListener(this);
                 i++;
             }
             panel.setBackground(Color.BLACK);
@@ -525,6 +508,96 @@ public class GUI implements ActionListener {
             btn.setOpaque(false);
             return btn;
         }
+
+        @Override
+        public void actionPerformed(ActionEvent ev) {
+            try {
+                Iterator<Room> iter = this.rooms.iterator();
+                Room room = new Room();
+                if (ev.getSource().equals(this.doors[0])) {
+                    room = iter.next();
+                } else if (ev.getSource().equals(this.doors[1])) {
+                    iter.next();
+                    room = iter.next();
+                } else if (ev.getSource().equals(this.doors[2])) {
+                    iter.next();
+                    iter.next();
+                    room = iter.next();
+                } else if (ev.getSource().equals(this.doors[3])) {
+                    iter.next();
+                    iter.next();
+                    iter.next();
+                    room = iter.next();
+                }
+                long remove = GUI.this.instance.getScore() - (GUI.this.map.getEdgeWeight(GUI.this.instance.getPos().getName(), room.getName()) * GUI.this.instance.getLevel());
+                if (remove < 0)
+                    remove = 0;
+                if (GUI.this.instance.getScore() != remove)
+                    GUI.this.ghost(GUI.this.map.getEdgeWeight(GUI.this.instance.getPos().getName(), room.getName()) * GUI.this.instance.getLevel());
+                GUI.this.instance.setScore(remove);
+                GUI.this.instance.setPos(room);
+                GUI.this.points.setText("<html><h1><font color=\"white\">PONTOS: " + GUI.this.instance.getScore() + "</font></h1></html>");
+                GUI.this.pos.setText("<html><h3><font color=\"white\">APOSENTO ATUAL: " + GUI.this.instance.getPos().getName().toUpperCase() + "</font></h3></html>");
+            } catch (ElementNotFoundException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    /**
+     * Método que apresenta a janela que demonstra os pontos a serem retirados por encontrar um fantasma.
+     * 
+     * @param points pontos a serem retirados ao encontrar um determinado fantasma
+     * @throws IOException erro ao procurar a biblioteca de imagens
+     */
+    private void ghost(long points) throws IOException {
+        //Start the variables
+        this.ghost = new JFrame("Fantasma");
+        this.okGhost = new JButton(new ImageIcon(ImageIO.read(new File("lib/images/ok.png"))));
+        this.okGhost.setBorderPainted(false);
+        this.okGhost.setContentAreaFilled(false);
+        this.okGhost.setMargin(new Insets(0, 0, 0, 0));
+        this.okGhost.setOpaque(false);
+        JPanel panel1 = new JPanel();
+        JPanel panel2 = new JPanel();
+        JPanel panel3 = new JPanel();
+        JLabel label = new JLabel(new ImageIcon(ImageIO.read(
+                        new File("lib/images/ghost.png")).getScaledInstance(GraphicsEnvironment.
+                            getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth() / 5, 
+                                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().
+                                    getDisplayMode().getHeight() / 2, Image.SCALE_DEFAULT)));
+        
+        //Layout config and Add content to panels
+        panel1.setLayout(new BorderLayout());
+        panel1.add(new JLabel("<html><h1><font color=\"white\">FANTASMA ENCONTRADO!!!</font></h3></html>"), BorderLayout.NORTH);
+        panel1.add(label, BorderLayout.SOUTH);
+        panel1.setBackground(Color.BLACK);
+        
+        panel2.add(new JLabel("<html><h3><font color=\"white\">Ups! Encontraste um fantasma... Perdeste " + points + "pontos</font></h3></html>"));
+        panel2.setBackground(Color.BLACK);
+        
+        panel3.add(this.okGhost);
+        panel3.setBackground(Color.BLACK);
+        
+        //Add content to the frame
+        this.ghost.getContentPane().add(panel1, BorderLayout.NORTH);
+        this.ghost.getContentPane().add(panel2, BorderLayout.CENTER);
+        this.ghost.getContentPane().add(panel3, BorderLayout.SOUTH);
+        
+        //Frame config
+        this.ghost.setSize(
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getWidth()/* - 500*/, 
+                GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDisplayMode().getHeight()/* - 200*/
+        );
+        this.ghost.setLocationRelativeTo(null);
+        this.ghost.setUndecorated(true);
+        this.ghost.setResizable(false);
+        this.ghost.setVisible(true);
+        
+        //Action listener
+        this.okGhost.addActionListener(this);
     }
 
     /**
@@ -591,7 +664,7 @@ public class GUI implements ActionListener {
                 }
                 this.player.dispose();
             }
-        } else if (ev.getSource().equals(this.OK)) {
+        } else if (ev.getSource().equals(this.okHighscore)) {
             this.highscoreFrame.dispose();
             this.blocked = false;
         } else if (ev.getSource().equals(this.close) && !this.blocked) {
@@ -613,7 +686,11 @@ public class GUI implements ActionListener {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else if (ev.getSource().equals(this.simulationMode) && !this.blocked) {
-            this.simulation();
+            try {
+                this.simulation();
+            } catch (ElementNotFoundException | NonAvailablePath | EmptyCollectionException ex) {
+                Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else if (ev.getSource().equals(this.soundB) && !this.blocked) {
             this.sound();
         } else if (ev.getSource().equals(this.menuB)) {
@@ -624,6 +701,8 @@ public class GUI implements ActionListener {
             } catch (IOException | UnsupportedAudioFileException | LineUnavailableException ex) {
                 Logger.getLogger(GUI.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else if (ev.getSource().equals(this.okGhost)) {
+            this.ghost.dispose();
         }
     }
 }
