@@ -31,8 +31,8 @@ Some of the project screenshots
 
 <a name="documentation"></a>
 ## Documentation
-To access project javadoc you need to download to a zip format this project and then go to directory dist/javadoc/index.html
-<p><a href=""> Documentation File</a></p>
+To access project javadoc you need to download to a zip format this project and then go to directory lib/javadoc/index.html
+<p><a href="https://github.com/Joaodevgit/Haunted-House-Game/tree/master/lib/javadoc"> Documentation File</a></p>
 
 <a name="project_contributors"></a>
 ## Project Contributors
