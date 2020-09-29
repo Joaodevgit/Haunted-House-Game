@@ -14,11 +14,8 @@ There are 2 game modes **manual** and **simulation**:
 ## Table of Contents (Optional)
 
 - [Project Screenshots](#project_screenshots)
-- [Features](#features)
-- [Contributing](#contributing)
-- [Team](#team)
-- [FAQ](#faq)
-- [Support](#support)
+- [Documentation](#documentation)
+- [Project Contributors](#project_contributors)
 - [License](#license)
 
 <a name="project_screenshots"></a>
@@ -32,16 +29,19 @@ Some of the project screenshots
 ![Screenshot_5](https://user-images.githubusercontent.com/44362304/94581606-2cbcd700-0273-11eb-8098-b6c56cc074d6.png)
 ![Screenshot_6](https://user-images.githubusercontent.com/44362304/94581610-2d556d80-0273-11eb-9bce-0aa72bc1caea.png)
 
+<a name="documentation"></a>
 ## Documentation
 To access project javadoc you need to download to a zip format this project and then go to directory dist/javadoc/index.html
 <p><a href=""> Documentation File</a></p>
 
+<a name="project_contributors"></a>
 ## Project Contributors
 | João Pereira | Francisco Spínola |
 | :---: |:---:| 
 | ![João Pereira](https://avatars2.githubusercontent.com/u/44362304?s=200&u=e779f8e4e1d4788360e7478a675df73f219b42b4&v=3)| ![Francisco Spínola](https://user-images.githubusercontent.com/44362304/94473787-94681900-01c4-11eb-89a4-9b80aa9a7b9f.png?s=200&v=3) |
 | <a href="https://github.com/Joaodevgit" target="_blank">`github.com/Joaodevgit`</a> | <a href="https://github.com/fspinola85" target="_blank">`github.com/fspinola85`</a>|
 
+<a name="license"></a>
 ## License
 
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
