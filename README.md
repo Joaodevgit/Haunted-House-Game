@@ -11,9 +11,26 @@ There are 2 game modes **manual** and **simulation**:
 - The **manual** game mode asks the user where he wants to go (from the entrance) considering his current location, until he reaches the outside or until he loses all points of life.
 - The **simulation** indicates the path that allows the player to reach the outside with the greatest number of points remaining.
 
+## Table of Contents (Optional)
+
+- [Project Screenshots](#project_screenshots)
+- [Features](#features)
+- [Contributing](#contributing)
+- [Team](#team)
+- [FAQ](#faq)
+- [Support](#support)
+- [License](#license)
+
+<a name="project_screenshots"></a>
 ## Project Screenshots
 Some of the project screenshots
 
+![Screenshot_1](https://user-images.githubusercontent.com/44362304/94580094-6bea2880-0271-11eb-9959-af9987a6d681.png)
+![Screenshot_2](https://user-images.githubusercontent.com/44362304/94580298-a5bb2f00-0271-11eb-8197-eb9c68651444.png)
+![Screenshot_3](https://user-images.githubusercontent.com/44362304/94580914-5fb29b00-0272-11eb-83f1-3a525e7532ec.png)
+![Screenshot_4](https://user-images.githubusercontent.com/44362304/94581602-2b8baa00-0273-11eb-8957-51b49174db85.png)
+![Screenshot_5](https://user-images.githubusercontent.com/44362304/94581606-2cbcd700-0273-11eb-8098-b6c56cc074d6.png)
+![Screenshot_6](https://user-images.githubusercontent.com/44362304/94581610-2d556d80-0273-11eb-9bce-0aa72bc1caea.png)
 
 ## Documentation
 To access project javadoc you need to download to a zip format this project and then go to directory dist/javadoc/index.html
@@ -29,5 +46,5 @@ To access project javadoc you need to download to a zip format this project and 
 
 [![License](http://img.shields.io/:license-mit-blue.svg?style=flat-square)](http://badges.mit-license.org)
 - **[MIT license](http://opensource.org/licenses/mit-license.php)**
-- Copyright 2020 © João Pereira.
+- Copyright 2020 © João Pereira, Francisco Spínola.
 
