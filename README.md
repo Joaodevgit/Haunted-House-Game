@@ -11,7 +11,7 @@ There are 2 game modes **manual** and **simulation**:
 - The **manual** game mode asks the user where he wants to go (from the entrance) considering his current location, until he reaches the outside or until he loses all points of life.
 - The **simulation** indicates the path that allows the player to reach the outside with the greatest number of points remaining.
 
-## Table of Contents (Optional)
+## Table of Contents
 
 - [Project Screenshots](#project_screenshots)
 - [Documentation](#documentation)
