@@ -22,12 +22,13 @@ There are 2 game modes **manual** and **simulation**:
 ## Project Screenshots
 Some of the project screenshots
 
-![Screenshot_1](https://user-images.githubusercontent.com/44362304/94580094-6bea2880-0271-11eb-9959-af9987a6d681.png)
-![Screenshot_2](https://user-images.githubusercontent.com/44362304/94580298-a5bb2f00-0271-11eb-8197-eb9c68651444.png)
+![Menu](https://user-images.githubusercontent.com/44362304/94580094-6bea2880-0271-11eb-9959-af9987a6d681.png)
+![Manual Mode](https://user-images.githubusercontent.com/44362304/94580298-a5bb2f00-0271-11eb-8197-eb9c68651444.png)
+![Simulation Mode](https://user-images.githubusercontent.com/44362304/94581610-2d556d80-0273-11eb-9bce-0aa72bc1caea.png)
 ![Screenshot_3](https://user-images.githubusercontent.com/44362304/94580914-5fb29b00-0272-11eb-83f1-3a525e7532ec.png)
 ![Screenshot_4](https://user-images.githubusercontent.com/44362304/94581602-2b8baa00-0273-11eb-8957-51b49174db85.png)
 ![Screenshot_5](https://user-images.githubusercontent.com/44362304/94581606-2cbcd700-0273-11eb-8098-b6c56cc074d6.png)
-![Screenshot_6](https://user-images.githubusercontent.com/44362304/94581610-2d556d80-0273-11eb-9bce-0aa72bc1caea.png)
+
 
 <a name="documentation"></a>
 ## Documentation
